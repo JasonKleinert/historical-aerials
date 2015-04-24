@@ -67,26 +67,25 @@ function parseDate(str) {
 function translateRecords(rows, callback) {
   const newRows = rows.map((row) => {
     return {
-      AcquireAgency: row.Aquire_Agency,
-      CanisterNo: row.Canister_No,
+      AcquiringAgency: row.Aquire_Agency,
+      // CanisterNo: row.Canister_No, //NOT NEEDED - always blank
       County: row.County,
-      Coverage: row.Coverage === 'Y',
-      DBNumber: tryparse.int(row.DB_No),
-      // Date: new Date(row.Date) || null,
+      Coverage: row.Coverage.toUpperCase() === 'Y',
+      // DBNumber: tryparse.int(row.DB_No), //NOT NEEDED - Access database internal key
       Date: parseDate(row.Date),
-      FirstFrame: tryparse.int(row.First_frame),
+      // FirstFrame: tryparse.int(row.First_frame), //NOT NEEDED - unused generally
       Format: tryparse.int(row.Format),
       IndexType: row.Index_type,
-      LocationCode: row.Location_code,
-      MSN: row.MSN,
+      LocationCode: row.Location_code, //internal location index/code
+      MissionNum: row.MSN,
       Medium: row.Medium.toUpperCase(),
       NumFrames: tryparse.int(row.No_of_frames),
-      IsPositive: row.Pos_Neg === "POS",
-      PrintType: row.Print_type.toUpperCase(),
-      RSDIS: tryparse.int(row.RSDIS),
+      // IsPositive: row.Pos_Neg === "POS", //NOT NEEDED - not relevant
+      PrintType: row.Print_type.toUpperCase(), //B&W, CIR (color infrared), COL (color)
+      RSDIS: tryparse.int(row.RSDIS), //Old index system
       Remarks: row.Remarks.trim(),
       Scale: tryparse.int(row.Scale),
-      IsPublic: row.Security_status === "PUBLIC"
+      IsPublic: row.Security_status.toUpperCase() === "PUBLIC"
     };
   });
   callback(null, newRows);
