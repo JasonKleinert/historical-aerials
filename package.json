@@ -1,0 +1,22 @@
+{
+  "name": "aerial-database",
+  "version": "1.0.0",
+  "description": "Install mdbtools `apt-get install mdbtools`",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^0.9.0",
+    "clog": "^0.1.6",
+    "dsv": "0.0.4",
+    "mdb": "^0.1.0",
+    "ramda": "^0.13.0",
+    "rethinkdb": "^2.0.0",
+    "tryparse": "0.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "etl": "babel-node etl.es"
+  },
+  "author": "",
+  "license": "ISC"
+}
