@@ -1,4 +1,4 @@
-Install rethink `apt-get install rethinkdb`
+Install rethink: http://www.rethinkdb.com/docs/install/ubuntu/
 
 Install mdbtools `apt-get install mdbtools`
 
