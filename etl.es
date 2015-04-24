@@ -141,7 +141,9 @@ function translateRecords(rows, callback) {
       RSDIS: tryparse.int(row.RSDIS), //Old index system
       Remarks: row.Remarks.trim(),
       Scale: tryparse.int(row.Scale),
-      IsPublic: row.Security_status.toUpperCase() === 'PUBLIC'
+      IsPublic: row.Security_status.toUpperCase() === 'PUBLIC',
+      Created: new Date(),
+      Modified: new Date()
     };
   });
   callback(null, newRows);
