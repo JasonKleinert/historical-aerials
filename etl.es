@@ -12,7 +12,7 @@ const rethink = require('rethinkdb');
 const tryparse = require('tryparse');
 const R = require('ramda');
 
-const accessDb = mdb('Aerial_database.accdb');
+const accessDb = mdb('./data/Aerial_database.accdb');
 const accessTable = 'Aerial_Info';
 const rdbName = 'AerialImagery';
 const rdbTable = 'AerialInfo';
@@ -21,7 +21,7 @@ const rdbTable = 'AerialInfo';
 //TODO: Should I fix AcquiringAgency inconsitencies? Ask Joey
 
 const countyFips = () => {
-  const contents = fs.readFileSync('./st48_tx_cou.txt', 'utf-8');
+  const contents = fs.readFileSync('./data/st48_tx_cou.txt', 'utf-8');
   const rows = csv.parseRows(contents);
   return rows.map(function (row) {
     return {
@@ -32,7 +32,7 @@ const countyFips = () => {
 }();
 
 const badCountyNameMap = () => {
-  const contents = fs.readFileSync('./badCounties.csv', 'utf-8');
+  const contents = fs.readFileSync('./data/badCounties.csv', 'utf-8');
   return csv.parse(contents);
 }();
 
@@ -53,7 +53,7 @@ function connectDb(cb) {
   }, (err, connection) => {
     assert.ifError(err);
     cb(err, connection);
-  });  
+  });
 }
 
 
