@@ -98,7 +98,7 @@ function parseDate(str) {
 
 function findCounty(name, dbNo) {
   const foundVal = R.find((cf) => {
-    return name.toUpperCase() === cf.Name.toUpperCase();
+    return upper(name) === upper(cf.Name);
   }, countyFips);
 
   if (foundVal) { 
@@ -120,13 +120,21 @@ function findCounty(name, dbNo) {
 }
 
 
+function trim(str) {
+  return String.prototype.trim.call(str);
+}
+
+function upper(str) {
+  return String.prototype.toUpperCase.call(str);
+}
+
 function translateRecords(rows, callback) {
   const newRows = rows.map((row) => {
     return {
-      AcquiringAgency: row.Aquire_Agency.toUpperCase(),
+      AcquiringAgency: upper(row.Aquire_Agency),
       // CanisterNo: row.Canister_No, //NOT NEEDED - always blank
       County: findCounty(row.County, row.DB_No), 
-      Coverage: row.Coverage.toUpperCase() === 'Y',
+      Coverage: upper(row.Coverage) === 'Y',
       OrigDBNumber: tryparse.int(row.DB_No), //original Access PK
       Date: parseDate(row.Date),
       // FirstFrame: tryparse.int(row.First_frame), //NOT NEEDED - unused generally
@@ -134,14 +142,14 @@ function translateRecords(rows, callback) {
       IndexType: row.Index_type,
       LocationCode: row.Location_code, //internal location index/code
       Mission: row.MSN,
-      Medium: row.Medium.toUpperCase(),
+      Medium: upper(row.Medium),
       NumFrames: tryparse.int(row.No_of_frames),
       // IsPositive: row.Pos_Neg === "POS", //NOT NEEDED - not relevant
-      PrintType: row.Print_type.toUpperCase(), //B&W, CIR (color infrared), COL (color)
+      PrintType: upper(row.Print_type), //B&W, CIR (color infrared), COL (color)
       RSDIS: tryparse.int(row.RSDIS), //Old index system
-      Remarks: row.Remarks.trim(),
+      Remarks: trim(row.Remarks),
       Scale: tryparse.int(row.Scale),
-      IsPublic: row.Security_status.toUpperCase() === 'PUBLIC',
+      IsPublic: upper(row.Security_status) === 'PUBLIC',
       Created: new Date(),
       Modified: new Date()
     };
