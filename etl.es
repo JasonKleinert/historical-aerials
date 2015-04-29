@@ -17,8 +17,10 @@ const accessTable = 'Aerial_Info';
 const rdbName = 'AerialImagery';
 const rdbTable = 'AerialInfo';
 
-//TODO: Check badCounties.csv with Joey
 //TODO: Should I fix AcquiringAgency inconsitencies? Ask Joey
+
+// Array of existing entry DB_No IDs that can be skipped for ETL
+const recordsToSkip = [3684];
 
 const countyFips = () => {
   const contents = fs.readFileSync('./data/st48_tx_cou.txt', 'utf-8');
@@ -40,6 +42,7 @@ const badCountyNameMap = () => {
 async.waterfall([
   setupDb,
   getSourceRecords,
+  removeUnwantedRecords,
   translateRecords,
   insertRecords
 ]);
@@ -87,6 +90,15 @@ function getSourceRecords(setupResult, callback) {
     clog.info(`Read ${rows.length} rows from source table`);
     callback(null, rows);
   });
+}
+
+
+function removeUnwantedRecords(rows, callback) {
+  clog.info(`Removing records with DB_No in [${recordsToSkip.join(', ')}]`);
+  const filteredRows = rows.filter((row) => {
+    return recordsToSkip.indexOf(tryparse.int(row.DB_No)) === -1;
+  });
+  callback(null, filteredRows);
 }
 
 
