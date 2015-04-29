@@ -17,12 +17,10 @@ const accessTable = 'Aerial_Info';
 const rdbName = 'AerialImagery';
 const rdbTable = 'AerialInfo';
 
-//TODO: Should I fix AcquiringAgency inconsitencies? Ask Joey
-
 // Array of existing entry DB_No IDs that can be skipped for ETL
 const recordsToSkip = [3684];
 
-const countyFips = () => {
+const countyFips = (() => {
   const contents = fs.readFileSync('./data/st48_tx_cou.txt', 'utf-8');
   const rows = csv.parseRows(contents);
   return rows.map(function (row) {
@@ -31,12 +29,18 @@ const countyFips = () => {
       Name: row[3].replace(' County', '')
     };
   });
-}();
+})();
 
-const badCountyNameMap = () => {
+const badCountyNameMap = (() => {
   const contents = fs.readFileSync('./data/badCounties.csv', 'utf-8');
   return csv.parse(contents);
-}();
+})();
+
+
+const agencyNameMap = (() => {
+  const contents = fs.readFileSync('./data/acquiringAgencies.csv', 'utf-8');
+  return csv.parse(contents);
+})();
 
 
 async.waterfall([
@@ -102,9 +106,13 @@ function removeUnwantedRecords(rows, callback) {
 }
 
 
-function parseDate(str) {
+function parseDate(str, dbNo) {
   const d = new Date(str);
-  return isNaN(d) ? null : d;
+  if (isNaN(d)) {
+    clog.debug(`Invalid date "${str}" (DB_No ${dbNo})`);
+    return null;
+  }
+  return d;
 }
 
 
@@ -118,7 +126,7 @@ function findCounty(name, dbNo) {
   }
 
   //else
-  clog.warn(`Unable to find county "${name}" (DB_No ${dbNo}). Using badCountyNameMap.`);
+  clog.debug(`Unable to find county "${name}" (DB_No ${dbNo}). Using badCountyNameMap.`);
   const foundGoodNameRec = R.find((goodBad) => {
     return goodBad.BadName === name;
   }, badCountyNameMap);
@@ -140,15 +148,25 @@ function upper(str) {
   return String.prototype.toUpperCase.call(str);
 }
 
+
+function getAgency(agencyName) {
+  const foundRec = R.find((origNew) => {
+    return origNew.originalName === agencyName;
+  }, agencyNameMap);
+
+  return foundRec ? foundRec.newName : agencyName;
+}
+
+
 function translateRecords(rows, callback) {
   const newRows = rows.map((row) => {
     return {
-      AcquiringAgency: upper(row.Aquire_Agency),
+      AcquiringAgency: getAgency(row.Aquire_Agency),
       // CanisterNo: row.Canister_No, //NOT NEEDED - always blank
       County: findCounty(row.County, row.DB_No), 
       Coverage: upper(row.Coverage) === 'Y',
       OrigDBNumber: tryparse.int(row.DB_No), //original Access PK
-      Date: parseDate(row.Date),
+      Date: parseDate(row.Date, row.DB_No),
       // FirstFrame: tryparse.int(row.First_frame), //NOT NEEDED - unused generally
       Format: tryparse.int(row.Format),
       IndexType: row.Index_type,
