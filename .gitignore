@@ -1,5 +1,9 @@
 rethinkdb_data/
 
+*/config/production.json
+
+.dist
+
 # Logs
 logs
 *.log

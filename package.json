@@ -1,11 +1,12 @@
 {
   "name": "aerial-database",
   "version": "1.0.0",
-  "description": "Install mdbtools `apt-get install mdbtools`",
-  "main": "index.js",
+  "description": "TNRIS historical aerial imagery catalogue and API",
+  "main": "server/index.es",
   "dependencies": {
     "async": "^0.9.0",
     "clog": "^0.1.6",
+    "defaults": "^1.0.2",
     "dsv": "0.0.4",
     "hapi": "^8.4.0",
     "joi": "^6.4.1",
@@ -14,12 +15,25 @@
     "rethinkdb": "^2.0.0",
     "tryparse": "0.0.2"
   },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node index.es",
-    "etl": "babel-node etl.es"
+  "devDependencies": {
+    "babel": "^5.1.13",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-babel": "^5.1.0",
+    "gulp-sourcemaps": "^1.5.2",
+    "run-sequence": "^1.1.0",
+    "vinyl-paths": "^1.0.0"
   },
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "debug": "nodemon --debug --cwd ./.dist --watch server --watch config server/index.js",
+    "production-dist": "gulp clean && gulp fresh-dist --type production",
+    "start": "nodemon --cwd ./.dist --watch server --watch config server/index.js",
+    "dev-start": "NODE_ENV=development nodemon --cwd ./.dist --watch server --watch config server/index.js",
+    "watch": "gulp dev",
+    "etl": "node node_modules/babel/bin/babel/index.js etl.es | node"
+  },
+  "author": "TNRIS",
+  "bugs": {
+    "url": "https://github.com/tnris/tda-search/issues"
+  }
 }
