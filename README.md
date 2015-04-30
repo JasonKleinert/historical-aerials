@@ -9,4 +9,5 @@ To run ETL script: `npm run etl`
 ## Development
 
 `gulp run watch` in one terminal
+
 `npm run start` in another terminal
