@@ -4,10 +4,14 @@ Install mdbtools `apt-get install mdbtools`
 
 Install local packages `npm install`
 
-To run ETL script: `npm run etl`
-
 ## Development
 
-`gulp run watch` in one terminal
+Copy `server/config/production.sample.json` to `server/config/production.json` and fill in config values.
 
-`npm run start` in another terminal
+`gulp run watch` in one terminal to watch and dist source files
+
+`npm run start` in another terminal to run the app
+
+## ETL
+
+`npm run etl` to rebuild the new Rethink database from the original Access database
