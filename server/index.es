@@ -6,7 +6,7 @@ const clog = require('clog');
 const config = require('./config');
 
 const server = new hapi.Server();
-server.connection({port: 3000});
+server.connection({port: config.port});
 
 server.route({
   method: 'GET',
