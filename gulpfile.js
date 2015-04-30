@@ -23,7 +23,7 @@ gulp.task('watch', function () {
   console.log('  In debug mode: `npm run debug` and `node-inspector` in two separate shells');
 });
 
-gulp.task('dist', ['dist-code', 'dist-copy-other', 'dist-packaging']);
+gulp.task('dist', ['dist-code', 'dist-etl', 'dist-copy-other', 'dist-packaging']);
 
 gulp.task('dist-packaging', function () {
   return gulp.src('package.json')
@@ -41,6 +41,12 @@ gulp.task('dist-code', function () {
 gulp.task('dist-copy-other', function () {
   return gulp.src([dirs.server + '/**/*', '!' + dirs.server + '/**/*.es'])
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
+});
+
+gulp.task('dist-etl', function () {
+  return gulp.src('etl.es')
+    .pipe(babel())
+    .pipe(gulp.dest(dirs.dist));
 });
 
 gulp.task('clean', ['clean-dist']);

@@ -16,7 +16,6 @@
     "tryparse": "0.0.2"
   },
   "devDependencies": {
-    "babel": "^5.1.13",
     "del": "^1.1.1",
     "gulp": "^3.8.11",
     "gulp-babel": "^5.1.0",
@@ -30,7 +29,7 @@
     "start": "nodemon --cwd ./.dist --watch server --watch config server/index.js",
     "dev-start": "NODE_ENV=development nodemon --cwd ./.dist --watch server --watch config server/index.js",
     "watch": "gulp dev",
-    "etl": "node node_modules/babel/bin/babel/index.js etl.es | node"
+    "etl": "gulp dist && node .dist/etl.js"
   },
   "author": "TNRIS",
   "bugs": {

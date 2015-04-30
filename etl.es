@@ -12,10 +12,13 @@ const rethink = require('rethinkdb');
 const tryparse = require('tryparse');
 const R = require('ramda');
 
+const config = require('./server/config');
+
 const accessDb = mdb('./data/Aerial_database.accdb');
 const accessTable = 'Aerial_Info';
-const rdbName = 'AerialImagery';
+
 const rdbTable = 'AerialInfo';
+const rdbName = config.db_name;
 
 // Array of existing entry DB_No IDs that can be skipped for ETL
 const recordsToSkip = [3684];
@@ -54,9 +57,9 @@ async.waterfall([
 
 function connectDb(cb) {
   rethink.connect({
-    host: 'localhost',
-    port: 28015,
-    db: rdbName
+    host: config.db_host,
+    port: config.db_port,
+    db: config.db_name
   }, (err, connection) => {
     assert.ifError(err);
     cb(err, connection);
