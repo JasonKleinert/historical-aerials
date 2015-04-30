@@ -8,9 +8,7 @@ var vinylPaths = require('vinyl-paths');
 
 var dirs = {
   dist: '.dist',
-  tmp: '.tmp',
-  server: 'server',
-  config: 'config'
+  server: 'server'
 };
 
 gulp.task('default', ['dist']);
