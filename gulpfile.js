@@ -18,29 +18,29 @@ gulp.task('default', ['dist']);
 gulp.task('dev', ['dist', 'watch']);
 
 gulp.task('watch', function () {
-  gulp.watch(dirs.server + '/**/*', ['dist-server']);
+  gulp.watch(dirs.server + '/**/*', ['dist-code', 'dist-copy-other']);
 
   console.log('Watches are active for continuously disting dev files.');
   console.log('  To start dev server: `npm run start` in a separate shell');
   console.log('  In debug mode: `npm run debug` and `node-inspector` in two separate shells');
 });
 
-gulp.task('dist', ['dist-server', 'dist-copy', 'dist-packaging']);
+gulp.task('dist', ['dist-code', 'dist-copy-other', 'dist-packaging']);
 
 gulp.task('dist-packaging', function () {
   return gulp.src('package.json')
     .pipe(gulp.dest(dirs.dist));
 });
 
-gulp.task('dist-server', function () {
+gulp.task('dist-code', function () {
   return gulp.src(dirs.server + '/**/*.es')
     .pipe(sourcemaps.init())
-    .pipe(babel({only: '*.es'}))
+    .pipe(babel())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
 
-gulp.task('dist-copy', function () {
+gulp.task('dist-copy-other', function () {
   return gulp.src([dirs.server + '/**/*', '!' + dirs.server + '/**/*.es'])
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
