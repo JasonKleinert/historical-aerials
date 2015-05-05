@@ -17,7 +17,9 @@ const config = require('./server/config');
 const accessDb = mdb('./data/Aerial_database.accdb');
 const accessTable = 'Aerial_Info';
 
-const rdbTable = 'AerialInfo';
+
+const rdbTable = 'ImageryRecords';
+const rdbCountiesTable = 'Counties';
 const rdbName = config.db_name;
 
 // Array of existing entry DB_No IDs that can be skipped for ETL
@@ -48,10 +50,10 @@ const agencyNameMap = (() => {
 
 async.waterfall([
   setupDb,
+  loadCounties,
   getSourceRecords,
   removeUnwantedRecords,
-  translateRecords,
-  insertRecords
+  translateRecords
 ]);
 
 
@@ -67,6 +69,15 @@ function connectDb(cb) {
 }
 
 
+function dropAndCreate(tableName, connection, callback) {
+  rethink.tableDrop(tableName).run(connection, () => {
+    rethink.tableCreate(tableName).run(connection, () => {
+      clog.info(`Dropped (if it existed) and created table [${rdbName}.${tableName}]`);
+      callback(null);
+    });
+  });
+}
+
 function setupDb(callback) {
   connectDb((err, connection) => {
     assert.ifError(err);
@@ -78,19 +89,29 @@ function setupDb(callback) {
         clog.info(`Created Database [${rdbName}]`);
       }
 
-      rethink.tableDrop(rdbTable).run(connection, () => {
-        rethink.tableCreate(rdbTable).run(connection, (err, result) => {
-          clog.info(`Dropped (if it existed) and created table [${rdbName}.${rdbTable}]`);
-          connection.close();
-          callback(null, result);
-        });
+      async.parallel([
+        (cb) => {
+          dropAndCreate(rdbTable, connection, cb);
+        },
+        (cb) => {
+          dropAndCreate(rdbCountiesTable, connection, cb);
+        }
+      ], () => {
+        connection.close();
+        callback(null);
       });
     });
   });
 }
 
+//TODO: Load counties separately, then just FK to FIPS code in the
+// imagery records
+function loadCounties(callback) {
+  insertRecords(countyFips, rdbCountiesTable, callback);
+}
 
-function getSourceRecords(setupResult, callback) {
+
+function getSourceRecords(callback) {
   accessDb.toCSV(accessTable, (err, contents) => {
     assert.ifError(err);
     const rows = csv.parse(contents);
@@ -166,7 +187,7 @@ function translateRecords(rows, callback) {
     return {
       AcquiringAgency: getAgency(row.Aquire_Agency),
       // CanisterNo: row.Canister_No, //NOT NEEDED - always blank
-      County: findCounty(row.County, row.DB_No), 
+      CountyFIPS: findCounty(row.County, row.DB_No).FIPS, 
       Coverage: upper(row.Coverage) === 'Y',
       OrigDBNumber: tryparse.int(row.DB_No), //original Access PK
       Date: parseDate(row.Date, row.DB_No),
@@ -187,20 +208,21 @@ function translateRecords(rows, callback) {
       Modified: new Date()
     };
   });
-  callback(null, newRows);
+
+  insertRecords(newRows, rdbTable, callback);
 }
 
 
-function insertRecords(rows, callback) {
+function insertRecords(rows, tableName, callback) {
   connectDb((err, connection) => {
-    rethink.table(rdbTable)
+    rethink.table(tableName)
       .insert(rows)
       .run(connection, (err, result) => {
         assert.ifError(err);
         assert.ok(result.errors === 0, 'There were errors while inserting records');
-        clog.info(`Inserted ${result.inserted} records into [${rdbName}.${rdbTable}]`);
+        clog.info(`Inserted ${result.inserted} records into [${rdbName}.${tableName}]`);
         connection.close();
-        callback(null, result);
+        callback(null);
       });
   });
 }
