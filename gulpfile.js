@@ -3,7 +3,6 @@ var babel = require('gulp-babel');
 var del = require('del');
 var gulp = require('gulp');
 var runSequence = require('run-sequence');
-var sourcemaps = require('gulp-sourcemaps');
 var vinylPaths = require('vinyl-paths');
 
 var dirs = {
@@ -32,9 +31,11 @@ gulp.task('dist-packaging', function () {
 
 gulp.task('dist-code', function () {
   return gulp.src(dirs.server + '/**/*.es')
-    .pipe(sourcemaps.init())
     .pipe(babel())
-    .pipe(sourcemaps.write('.'))
+    .on('error', function (err) {
+      console.log(err.toString());
+      this.emit('end');
+    })
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
 

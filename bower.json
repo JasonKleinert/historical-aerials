@@ -1,0 +1,20 @@
+{
+  "name": "historical-aerials",
+  "version": "1.0.0",
+  "homepage": "https://github.com/tnris/historical-aerials",
+  "authors": [
+    "James Seppi <james.seppi@gmail.com>"
+  ],
+  "description": "TNRIS Historical Imagery Archive",
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ng-admin": "~0.6.0"
+  }
+}

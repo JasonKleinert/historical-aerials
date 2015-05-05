@@ -1,18 +1,48 @@
 const assert = require('assert');
-const R = require('ramda');
 const rethink = require('rethinkdb');
 
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
 
-const pickReturnFields = R.map(R.pick(
-  ['AcquiringAgency', 'CountyFIPS', 'Date', 'PrintType', 'Scale']
-));
+function toArray(callback) {
+  return (err, cursor) => {
+    if (err) {
+      throw err;
+    }
+    cursor.toArray((err, results) => {
+      if (err) {
+        throw err;
+      }
+      callback(null, results);
+    });
+  };
+}
+
+function toOne(callback) {
+  return (err, cursor) => {
+    if (err) {
+      throw err;
+    }
+    cursor.toArray((err, results) => {
+      if (err) {
+        throw err;
+      }
+
+      if (results.length) {
+        callback(null, results[0]);
+      }
+      else {
+        callback(null, null);
+      }
+    });
+  };
+}
 
 class HistoricalImageryDb {
   constructor(config) {
     this.config = config;
   }
+
 
   connectDb(callback) {
     rethink.connect({
@@ -25,22 +55,42 @@ class HistoricalImageryDb {
     });
   }
 
-  getForCountyFips(countyFips, callback) {
+
+  getCounties(callback) {
+    this.connectDb((err, conn) => {
+      countiesTable.orderBy('Name').run(conn, toArray(callback));
+    });
+  }
+
+
+  getCountyByFips(fips, callback) {
+    this.connectDb((err, conn) => {
+      countiesTable.filter({FIPS: fips}).limit(1)
+        .run(conn, toOne(callback));
+    });
+  }
+
+
+  getRecordsByCounty(countyFips, callback) {
     const matchFips = rethink.row('CountyFIPS').eq(countyFips);
     const isPublic = rethink.row('IsPublic').eq(true);
     this.connectDb((err, conn) => {
       recordsTable.filter(matchFips.and(isPublic)).orderBy('Date')
-        .run(conn, (err, cursor) => {
-          if (err) {
-            throw err;
-          }
-          cursor.toArray((err, results) => {
-            if (err) {
-              throw err;
-            }
-            callback(null, pickReturnFields(results));
-          });
-        });
+        .run(conn, toArray(callback));
+    });
+  }
+
+
+  getRecords(callback) {
+    this.connectDb((err, conn) => {
+      recordsTable.run(conn, toArray(callback));
+    });
+  }
+
+
+  getRecord(id, callback) {
+    this.connectDb((err, conn) => {
+      recordsTable.filter({id: id}).run(conn, toOne(callback));
     });
   }
 
