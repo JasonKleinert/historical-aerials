@@ -1,4 +1,5 @@
 rethinkdb_data/
+bower_components/
 
 */config/production.json
 
