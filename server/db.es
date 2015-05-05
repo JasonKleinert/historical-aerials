@@ -2,9 +2,11 @@ const assert = require('assert');
 const R = require('ramda');
 const rethink = require('rethinkdb');
 
-const table = rethink.table('AerialInfo');
+const recordsTable = rethink.table('ImageryRecords');
+const countiesTable = rethink.table('Counties');
+
 const pickReturnFields = R.map(R.pick(
-  ['AcquiringAgency', 'County', 'Date', 'PrintType', 'Scale']
+  ['AcquiringAgency', 'CountyFIPS', 'Date', 'PrintType', 'Scale']
 ));
 
 class HistoricalImageryDb {
@@ -24,10 +26,10 @@ class HistoricalImageryDb {
   }
 
   getForCountyFips(countyFips, callback) {
-    const matchFips = rethink.row('County')('FIPS').eq(countyFips);
+    const matchFips = rethink.row('CountyFIPS').eq(countyFips);
     const isPublic = rethink.row('IsPublic').eq(true);
     this.connectDb((err, conn) => {
-      table.filter(matchFips.and(isPublic)).orderBy('Date')
+      recordsTable.filter(matchFips.and(isPublic)).orderBy('Date')
         .run(conn, (err, cursor) => {
           if (err) {
             throw err;
@@ -41,6 +43,7 @@ class HistoricalImageryDb {
         });
     });
   }
+
 }
 
 module.exports = (config) => {
