@@ -1,7 +1,6 @@
 
 const Hapi = require('hapi');
-
-
+const swig = require('swig');
 const clog = require('clog');
 
 const logging = require('./logging');
@@ -11,6 +10,18 @@ const server = new Hapi.Server();
 server.connection({
   port: config.port,
   routes: {cors: true}
+});
+
+server.views({
+  engines: {
+    html: {
+      module: swig,
+      compileOptions: {
+        varControls: ['{<','>}']
+      }
+    }
+  },
+  path: './server/views'
 });
 
 

@@ -1,6 +1,9 @@
 const Joi = require('joi');
 const Boom = require('boom');
+const extend = require('extend');
 const R = require('ramda');
+
+const lib = require('../common');
 
 const pickRecordFields = R.pick(
   ['AcquiringAgency', 'CountyFIPS', 'Date', 'PrintType', 'Scale']
@@ -20,7 +23,8 @@ module.exports = (server, config, pathPrefix='') => {
       validate: {
         params: {
           fips: Joi.number().integer().optional()
-        }
+        },
+        query: lib.pagingValidation
       }
     },
     handler: (request, reply) => {
@@ -33,8 +37,12 @@ module.exports = (server, config, pathPrefix='') => {
         });
       }
       else {
-        db.getCounties((err, results) => {
-          reply(R.map(pickCountyFields)(results));
+        const options = R.pick(lib.pagingParams, request.query);
+        db.getCountiesCount((err, count) => {
+          db.getCounties(options, (err, results) => {
+            reply(R.map(pickCountyFields)(results))
+              .header('X-Total-Count', count);
+          }); 
         });
       }
     }
@@ -45,14 +53,15 @@ module.exports = (server, config, pathPrefix='') => {
     path: `${pathPrefix}/records`,
     config: {
       validate: {
-        query: {
+        query: extend({
           countyFips: Joi.number().integer().required()
-        }
+        }, lib.pagingValidation)
       }
     },
     handler: (request, reply) => {
       const countyFips = request.query.countyFips;
-      db.getRecordsByCounty(countyFips, (err, results) => {
+      const options = R.pick(lib.pagingParams, request.query);
+      db.getRecordsByCounty(countyFips, options, (err, results) => {
         if (!results.length) {
           return reply(Boom.notFound('No records found for given FIPS code'));
         }

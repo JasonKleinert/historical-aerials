@@ -9,6 +9,7 @@
     "clog": "^0.1.6",
     "defaults": "^1.0.2",
     "dsv": "0.0.4",
+    "extend": "^2.0.1",
     "good": "^6.1.2",
     "good-console": "^5.0.0",
     "hapi": "^8.4.0",
@@ -16,6 +17,7 @@
     "mdb": "^0.1.0",
     "ramda": "^0.13.0",
     "rethinkdb": "^2.0.0",
+    "swig": "^1.4.2",
     "tryparse": "0.0.2"
   },
   "devDependencies": {

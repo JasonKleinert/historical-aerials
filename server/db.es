@@ -4,6 +4,22 @@ const rethink = require('rethinkdb');
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
 
+function paginate(selection, options) {
+  if (options.sortField) {
+    if (options.sortDir && options.sortDir.toUpperCase() === 'DESC') {
+      selection = selection.orderBy(rethink.desc(options.sortField));
+    }
+    else {
+      selection = selection.orderBy(rethink.asc(options.sortField));
+    }
+  }
+  if (options.page && options.perPage) {
+    selection = selection.skip(((options.page-1) * options.perPage))
+      .limit(options.perPage);
+  }
+  return selection; //allow chaining of additional ReQL methods
+}
+
 function toArray(callback) {
   return (err, cursor) => {
     if (err) {
@@ -56,9 +72,22 @@ class HistoricalImageryDb {
   }
 
 
-  getCounties(callback) {
+  getCountiesCount(callback) {
     this.connectDb((err, conn) => {
-      countiesTable.orderBy('Name').run(conn, toArray(callback));
+      countiesTable.count().run(conn, (err, count) => {
+        callback(null, count);
+      });
+    });
+  }
+
+
+  getCounties(options, callback) {
+    if (arguments.length < 2) {
+      callback = options;
+    }
+    this.connectDb((err, conn) => {
+      paginate(countiesTable, options)
+        .run(conn, toArray(callback));
     });
   }
 
@@ -71,19 +100,33 @@ class HistoricalImageryDb {
   }
 
 
-  getRecordsByCounty(countyFips, callback) {
+  getRecordsByCounty(countyFips, options, callback) {
     const matchFips = rethink.row('CountyFIPS').eq(countyFips);
     const isPublic = rethink.row('IsPublic').eq(true);
     this.connectDb((err, conn) => {
-      recordsTable.filter(matchFips.and(isPublic)).orderBy('Date')
-        .run(conn, toArray(callback));
+      paginate(
+        recordsTable.filter(matchFips.and(isPublic)),
+        options
+      ).run(conn, toArray(callback));
     });
   }
 
 
-  getRecords(callback) {
+  getRecordsCount(callback) {
     this.connectDb((err, conn) => {
-      recordsTable.run(conn, toArray(callback));
+      recordsTable.count().run(conn, (err, count) => {
+        callback(null, count);
+      });
+    });
+  }
+
+  getRecords(options, callback) {
+    if (arguments.length < 2) {
+      callback = options;
+    }
+    this.connectDb((err, conn) => {
+      paginate(recordsTable, options)
+        .run(conn, toArray(callback));
     });
   }
 
