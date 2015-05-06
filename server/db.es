@@ -5,6 +5,10 @@ const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
 
 function paginate(selection, options) {
+  if (!options) { 
+    return selection;
+  }
+
   if (options.sortField) {
     if (options.sortDir && options.sortDir.toUpperCase() === 'DESC') {
       selection = selection.orderBy(rethink.desc(options.sortField));
