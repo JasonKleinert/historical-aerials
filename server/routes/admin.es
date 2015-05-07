@@ -1,5 +1,7 @@
 const R = require('ramda');
 const Joi = require('joi');
+const Boom = require('boom');
+const extend = require('extend');
 
 const lib = require('../common');
 
@@ -39,7 +41,13 @@ module.exports = (server, config, pathPrefix='') => {
         params: {
           id: Joi.string().optional()
         },
-        query: lib.pagingValidation
+        query: extend({
+          filters: Joi.object().optional()
+            .keys({
+              CountyFIPS: Joi.number(),
+              IsPublic: Joi.boolean()
+            })
+        }, lib.pagingValidation)
       }
     },
     handler: (request, reply) => {
@@ -49,8 +57,9 @@ module.exports = (server, config, pathPrefix='') => {
         });
       }
       else {
-        const options = R.pick(lib.pagingParams, request.query);
-        db.getRecordsCount((err, count) => {
+        const validOptions = ['filters'].concat(lib.pagingParams);
+        const options = R.pick(validOptions, request.query);
+        db.getRecordsCount(options, (err, count) => {
           db.getRecords(options, (err, records) => {
             reply(records)
               .header('X-Total-Count', count);
@@ -59,4 +68,25 @@ module.exports = (server, config, pathPrefix='') => {
       }
     }
   });
+
+  server.route({
+    method: 'DELETE',
+    path: `${apiPre}/records/{id?}`,
+    config: {
+      validate: {
+        params: {
+          id: Joi.string().required()
+        }
+      }
+    },
+    handler: (request, reply) => {
+      db.deleteRecord(request.params.id, (err, result) => {
+        if (err) {
+          return reply(Boom.notFound('No record found for given ID'));
+        }
+        return reply();
+      });
+    }
+  });
+
 };

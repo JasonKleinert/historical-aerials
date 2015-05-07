@@ -116,9 +116,13 @@ class HistoricalImageryDb {
   }
 
 
-  getRecordsCount(callback) {
+  getRecordsCount(options, callback) {
     this.connectDb((err, conn) => {
-      recordsTable.count().run(conn, (err, count) => {
+      let selection = recordsTable;
+      if (options.filters) {
+        selection = selection.filter(options.filters);
+      }
+      selection.count().run(conn, (err, count) => {
         callback(null, count);
       });
     });
@@ -129,7 +133,11 @@ class HistoricalImageryDb {
       callback = options;
     }
     this.connectDb((err, conn) => {
-      paginate(recordsTable, options)
+      let selection = recordsTable;
+      if (options.filters) {
+        selection = selection.filter(options.filters);
+      }
+      paginate(selection, options)
         .run(conn, toArray(callback));
     });
   }
@@ -138,6 +146,12 @@ class HistoricalImageryDb {
   getRecord(id, callback) {
     this.connectDb((err, conn) => {
       recordsTable.filter({id: id}).run(conn, toOne(callback));
+    });
+  }
+
+  deleteRecord(id, callback) {
+    this.connectDb((err, conn) => {
+      recordsTable.get(id).delete().run(conn, callback);
     });
   }
 

@@ -39,7 +39,7 @@ server.route({
   }
 });
 
-server.register(logging, (err) => {
+server.register([logging], (err) => {
   if (err) {
     clog.error(err);
   }
