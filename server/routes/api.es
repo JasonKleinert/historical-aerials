@@ -59,9 +59,12 @@ module.exports = (server, config, pathPrefix='') => {
       }
     },
     handler: (request, reply) => {
-      const countyFips = request.query.countyFips;
-      const options = R.pick(lib.pagingParams, request.query);
-      db.getRecordsByCounty(countyFips, options, (err, results) => {
+      let options = R.pick(lib.pagingParams, request.query);
+      options.filters ={
+        'CountyFIPS': request.query.countyFips,
+        'IsPublic': true
+      };
+      db.getRecords(options, (err, results) => {
         if (!results.length) {
           return reply(Boom.notFound('No records found for given FIPS code'));
         }

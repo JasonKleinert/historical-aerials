@@ -104,18 +104,6 @@ class HistoricalImageryDb {
   }
 
 
-  getRecordsByCounty(countyFips, options, callback) {
-    const matchFips = rethink.row('CountyFIPS').eq(countyFips);
-    const isPublic = rethink.row('IsPublic').eq(true);
-    this.connectDb((err, conn) => {
-      paginate(
-        recordsTable.filter(matchFips.and(isPublic)),
-        options
-      ).run(conn, toArray(callback));
-    });
-  }
-
-
   getRecordsCount(options, callback) {
     this.connectDb((err, conn) => {
       let selection = recordsTable;
