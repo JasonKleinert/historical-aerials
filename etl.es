@@ -12,11 +12,10 @@ const rethink = require('rethinkdb');
 const tryparse = require('tryparse');
 const R = require('ramda');
 
-const config = require('./server/config');
+const config = require('./config');
 
 const accessDb = mdb('./data/Aerial_database_20150504.accdb');
 const accessTable = 'Aerial_Info';
-
 
 const rdbTable = 'ImageryRecords';
 const rdbCountiesTable = 'Counties';
@@ -36,16 +35,10 @@ const countyFips = (() => {
   });
 })();
 
-const badCountyNameMap = (() => {
-  const contents = fs.readFileSync('./data/badCounties.csv', 'utf-8');
-  return csv.parse(contents);
-})();
 
-
-const agencyNameMap = (() => {
-  const contents = fs.readFileSync('./data/acquiringAgencies.csv', 'utf-8');
-  return csv.parse(contents);
-})();
+const acquiringAgencyNames = require('./data/acquiringAgencies.json');
+const badCountyNameMap = require('./data/badCounties.json');
+const badMediumNameMap = require('./data/badMediums.json');
 
 
 async.waterfall([
@@ -151,16 +144,15 @@ function findCounty(name, dbNo) {
 
   //else
   clog.debug(`Unable to find county "${name}" (DB_No ${dbNo}). Using badCountyNameMap.`);
-  const foundGoodNameRec = R.find((goodBad) => {
-    return goodBad.BadName === name;
-  }, badCountyNameMap);
+  
+  const foundGoodName = badCountyNameMap[name];
 
-  if (!foundGoodNameRec) {
+  if (!foundGoodName) {
     clog.error(`Still unable to find "${name}". Aborting.`);
     throw new Error(`Unable to find county "${name}"`);
   }
 
-  return findCounty(foundGoodNameRec.GoodName, dbNo);
+  return findCounty(foundGoodName, dbNo);
 }
 
 
@@ -172,13 +164,14 @@ function upper(str) {
   return String.prototype.toUpperCase.call(str);
 }
 
-
 function getAgency(agencyName) {
-  const foundRec = R.find((origNew) => {
-    return origNew.originalName === agencyName;
-  }, agencyNameMap);
+  const newName = acquiringAgencyNames[agencyName];
+  return newName || "Other";
+}
 
-  return foundRec ? foundRec.newName : agencyName;
+function getMedium(medium) {
+  medium = upper(medium);
+  return badMediumNameMap[medium] || medium;
 }
 
 
@@ -196,7 +189,7 @@ function translateRecords(rows, callback) {
       IndexType: row.Index_type,
       LocationCode: row.Location_code, //internal location index/code
       Mission: row.MSN,
-      Medium: upper(row.Medium),
+      Medium: getMedium(row.Medium),
       NumFrames: tryparse.int(row.No_of_frames),
       // IsPositive: row.Pos_Neg === "POS", //NOT NEEDED - not relevant
       PrintType: upper(row.Print_type), //B&W, CIR (color infrared), COL (color)

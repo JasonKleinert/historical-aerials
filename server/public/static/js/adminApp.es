@@ -72,10 +72,9 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
         .choices(countyChoices),
       nga.field('Year')
         .label('Min Year')
-        .attributes({placeholder: 'Minimum Year', pattern: '[0-9]{4,4}' })
-        .validation({
-          minlength: 4,
-          maxlength: 4
+        .attributes({
+          placeholder: 'Minimum Year',
+          pattern: '(19|20)[0-9]{2,2}'
         }),
       nga.field('IsPublic', 'boolean')
         .label('Public Only')
@@ -91,6 +90,37 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
       nga.field('Coverage', 'boolean'),
       nga.field('Format'),
       nga.field('Mission')
+    ]);
+
+  record.editionView()
+    .title('Edit Record')
+    .actions('show', 'delete')
+    .fields([
+      nga.field('id').label('ID').editable(false),
+      nga.field('AcquiringAgency').label('Acquiring Agency'),
+      nga.field('CountyFIPS', 'choice')
+        .label('County')
+        .choices(countyChoices),
+      nga.field('Date', 'date'),
+      nga.field('IndexType').label('Index Type'),
+      nga.field('IsPublic', 'boolean').label('Public'),
+      nga.field('LocationCode').label('Location Code'),
+      nga.field('Medium'),
+      nga.field('PrintType', 'choice').label('Print Type')
+        .choices([
+          {value: 'B&W', label: 'Black & White'},
+          {value: 'COL', label: 'Color'},
+          {value: 'CIR', label: 'Color Infrared'}
+        ]),
+      nga.field('NumFrames', 'number').label('# of Frames'),
+      nga.field('Coverage', 'boolean'),
+      nga.field('Format'),
+      nga.field('Mission'),
+      nga.field('RSDIS'),
+      nga.field('Remarks', 'text'),
+      nga.field('Scale', 'number'),
+      nga.field('Created', 'date').editable(false),
+      nga.field('Modified', 'date').editable(false)
     ]);
 
   // record.creationView();

@@ -7,7 +7,9 @@ var vinylPaths = require('vinyl-paths');
 
 var dirs = {
   dist: '.dist',
-  server: 'server'
+  server: 'server',
+  data: 'data',
+  config: 'config'
 };
 
 gulp.task('default', ['dist']);
@@ -22,32 +24,59 @@ gulp.task('watch', function () {
   console.log('  In debug mode: `npm run debug` and `node-inspector` in two separate shells');
 });
 
-gulp.task('dist', ['dist-code', 'dist-etl', 'dist-copy-other', 'dist-packaging']);
+gulp.task('dist', ['dist-server', 'dist-config', 'dist-etl', 'dist-packaging']);
 
 gulp.task('dist-packaging', function () {
   return gulp.src('package.json')
     .pipe(gulp.dest(dirs.dist));
 });
 
-gulp.task('dist-code', function () {
+var onErr = function (err) {
+  console.log(err.toString());
+  this.emit('end');
+};
+
+gulp.task('dist-server', ['dist-copy-server'], function () {
   return gulp.src(dirs.server + '/**/*.es')
     .pipe(babel())
-    .on('error', function (err) {
-      console.log(err.toString());
-      this.emit('end');
-    })
+    .on('error', onErr)
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
 
-gulp.task('dist-copy-other', function () {
-  return gulp.src([dirs.server + '/**/*', '!' + dirs.server + '/**/*.es'])
+gulp.task('dist-config', ['dist-copy-config'], function () {
+  return gulp.src(dirs.config + '/**/*.es')
+    .pipe(babel())
+    .on('error', onErr)
+    .pipe(gulp.dest(dirs.dist + '/' + dirs.config));
+});
+
+gulp.task('dist-copy-server', function () {
+  return gulp.src([
+      dirs.server + '/**/*',
+      '!' + dirs.server + '/**/*.es'
+    ])
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
 
-gulp.task('dist-etl', function () {
+gulp.task('dist-copy-config', function () {
+  return gulp.src([
+      dirs.config + '/**/*',
+      '!' + dirs.config + '/**/*.es'
+    ])
+    .pipe(gulp.dest(dirs.dist + '/' + dirs.config));
+});
+
+
+gulp.task('dist-etl', ['dist-config', 'dist-copy-data'], function () {
   return gulp.src('etl.es')
     .pipe(babel())
+    .on('error', onErr)
     .pipe(gulp.dest(dirs.dist));
+});
+
+gulp.task('dist-copy-data', function () {
+  return gulp.src(dirs.data + '/**/*')
+    .pipe(gulp.dest(dirs.dist + '/' + dirs.data));
 });
 
 gulp.task('clean', ['clean-dist']);

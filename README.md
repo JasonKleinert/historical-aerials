@@ -18,7 +18,7 @@ Download the original database file from https://s3-us-west-2.amazonaws.com/tnri
 
 Copy `server/config/production.sample.json` to `server/config/production.json` and fill in config values.
 
-`gulp watch` in one terminal to watch and dist source files
+`gulp dev` in one terminal to watch and dist source files
 
 `npm start` in another terminal to run the app
 

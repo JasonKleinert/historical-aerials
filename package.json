@@ -34,7 +34,7 @@
     "start": "nodemon --cwd ./.dist --watch server --watch config server/index.js",
     "dev-start": "NODE_ENV=development nodemon --cwd ./.dist --watch server --watch config server/index.js",
     "watch": "gulp dev",
-    "etl": "gulp dist && node .dist/etl.js"
+    "etl": "gulp dist-etl && node .dist/etl.js"
   },
   "author": "TNRIS",
   "bugs": {

@@ -4,7 +4,7 @@ const swig = require('swig');
 const clog = require('clog');
 
 const logging = require('./logging');
-const config = require('./config');
+const config = require('../config');
 
 const server = new Hapi.Server();
 server.connection({
