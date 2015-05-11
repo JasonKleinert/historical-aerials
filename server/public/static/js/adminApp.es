@@ -1,7 +1,7 @@
 /* global angular:false */
 const adminApp = angular.module('HistoricalAerialsAdmin', ['ng-admin', 'ConfigApp']);
 
-adminApp.config(['RestangularProvider', (RestangularProvider) => {
+adminApp.config((RestangularProvider) => {
   RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
     function rmUnderscore(origParam) {
       if (origParam.indexOf('_') !== 0) {
@@ -23,9 +23,10 @@ adminApp.config(['RestangularProvider', (RestangularProvider) => {
     }
     return { params: params };
   });
-}]);
+});
 
-adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST, COUNTIES) => {
+adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TYPES) => {
+  const nga = NgAdminConfigurationProvider;
 
   const app = nga.application('TNRIS Historical Aerial Imagery Admin');
   app.baseApiUrl(HOST + '/admin/api/');
@@ -52,18 +53,15 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
           return `${COUNTIES[val]}\n${val}`  || 'UNKOWN';
         }),
       nga.field('Date', 'date'),
-      nga.field('IndexType').label('Index Type'),
       nga.field('IsPublic', 'boolean').label('Public'),
+      nga.field('IndexType').label('Index Type'),
       nga.field('LocationCode').label('Location Code'),
-      nga.field('Medium'),
-      nga.field('PrintType', 'choice').label('Print Type')
-        .choices([
-          {value: 'B&W', label: 'Black & White'},
-          {value: 'COL', label: 'Color'},
-          {value: 'CIR', label: 'Color Infrared'}
-        ]),
+      nga.field('Medium', 'choice')
+        .choices(MEDIUMS),
+      nga.field('PrintType', 'choice')
+        .label('Print Type')
+        .choices(PRINT_TYPES),
       nga.field('RSDIS'),
-      // nga.field('Remarks', 'text'),
       nga.field('Scale', 'number')
     ])
     .filters([
@@ -94,7 +92,7 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
 
   record.editionView()
     .title('Edit Record')
-    .actions('show', 'delete')
+    .actions(['show', 'delete'])
     .fields([
       nga.field('id').label('ID').editable(false),
       nga.field('AcquiringAgency').label('Acquiring Agency'),
@@ -102,23 +100,21 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
         .label('County')
         .choices(countyChoices),
       nga.field('Date', 'date'),
-      nga.field('IndexType').label('Index Type'),
       nga.field('IsPublic', 'boolean').label('Public'),
+      nga.field('IndexType').label('Index Type'),
       nga.field('LocationCode').label('Location Code'),
-      nga.field('Medium'),
-      nga.field('PrintType', 'choice').label('Print Type')
-        .choices([
-          {value: 'B&W', label: 'Black & White'},
-          {value: 'COL', label: 'Color'},
-          {value: 'CIR', label: 'Color Infrared'}
-        ]),
+      nga.field('Medium', 'choice')
+        .choices(MEDIUMS),
+      nga.field('PrintType', 'choice')
+        .label('Print Type')
+        .choices(PRINT_TYPES),
       nga.field('NumFrames', 'number').label('# of Frames'),
+      nga.field('Remarks', 'text'),
+      nga.field('Scale', 'number'),
       nga.field('Coverage', 'boolean'),
       nga.field('Format'),
       nga.field('Mission'),
       nga.field('RSDIS'),
-      nga.field('Remarks', 'text'),
-      nga.field('Scale', 'number'),
       nga.field('Created', 'date').editable(false),
       nga.field('Modified', 'date').editable(false)
     ]);
@@ -132,7 +128,7 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
   app.addEntity(record);
 
   nga.configure(app);
-}]);
+});
 
 adminApp.controller('Main', () => {
 });
