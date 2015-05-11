@@ -17,7 +17,8 @@ gulp.task('default', ['dist']);
 gulp.task('dev', ['dist', 'watch']);
 
 gulp.task('watch', function () {
-  gulp.watch(dirs.server + '/**/*', ['dist-code', 'dist-copy-other']);
+  gulp.watch(dirs.server + '/**/*', ['dist-server']);
+  gulp.watch(dirs.config + '/**/*', ['dist-config']);
 
   console.log('Watches are active for continuously disting dev files.');
   console.log('  To start dev server: `npm run start` in a separate shell');
