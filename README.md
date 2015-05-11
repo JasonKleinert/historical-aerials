@@ -8,9 +8,9 @@ Install local packages `npm install`
 
 Copy `server/config/production.sample.json` to `server/config/production.json` and fill in config values.
 
-`gulp run watch` in one terminal to watch and dist source files
+`gulp watch` in one terminal to watch and dist source files
 
-`npm run start` in another terminal to run the app
+`npm start` in another terminal to run the app
 
 ## ETL
 
