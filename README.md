@@ -6,6 +6,8 @@ Install local packages `npm install`
 
 ## Development
 
+`rethinkdb` to start RethinkDB server
+
 Copy `server/config/production.sample.json` to `server/config/production.json` and fill in config values.
 
 `gulp watch` in one terminal to watch and dist source files
