@@ -7,6 +7,7 @@ const lib = require('../common');
 
 module.exports = (server, config, pathPrefix='') => {
   const db = require('./../db')(config);
+  const apiPre = `${pathPrefix}/api`;
 
   server.route({
     method: 'GET',
@@ -29,10 +30,6 @@ module.exports = (server, config, pathPrefix='') => {
   });
 
 
-  const apiPre = `${pathPrefix}/api`;
-
-  //records?_page=1&_perPage=20&_sortDir=DESC&_sortField=id
-
   server.route({
     method: 'GET',
     path: `${apiPre}/records/{id?}`,
@@ -45,7 +42,8 @@ module.exports = (server, config, pathPrefix='') => {
           filters: Joi.object().optional()
             .keys({
               CountyFIPS: Joi.number(),
-              IsPublic: Joi.boolean()
+              IsPublic: Joi.boolean(),
+              Year: Joi.number().integer().min(1900)
             })
         }, lib.pagingValidation)
       }
@@ -80,7 +78,7 @@ module.exports = (server, config, pathPrefix='') => {
       }
     },
     handler: (request, reply) => {
-      db.deleteRecord(request.params.id, (err, result) => {
+      db.deleteRecord(request.params.id, (err) => {
         if (err) {
           return reply(Boom.notFound('No record found for given ID'));
         }

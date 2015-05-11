@@ -1,5 +1,6 @@
 const assert = require('assert');
 const rethink = require('rethinkdb');
+const R = require('ramda');
 
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
@@ -22,6 +23,21 @@ function paginate(selection, options) {
       .limit(options.perPage);
   }
   return selection; //allow chaining of additional ReQL methods
+}
+
+function filterRecords(selection, filterOpts) {
+  let opts = R.clone(filterOpts);
+  //special handling to filter by Year where we find records with Date
+  // year greater than or equal to given Year
+  if (opts.Year) {
+    const year = parseInt(opts.Year, 10);
+    selection = selection.hasFields(['Date']).filter(
+      rethink.row('Date').year().ge(year)
+    );
+    delete opts.Year;
+  }
+  selection = selection.filter(opts);
+  return selection;
 }
 
 function toArray(callback) {
@@ -108,13 +124,14 @@ class HistoricalImageryDb {
     this.connectDb((err, conn) => {
       let selection = recordsTable;
       if (options.filters) {
-        selection = selection.filter(options.filters);
+        selection = filterRecords(selection, options.filters);
       }
       selection.count().run(conn, (err, count) => {
         callback(null, count);
       });
     });
   }
+
 
   getRecords(options, callback) {
     if (arguments.length < 2) {
@@ -123,7 +140,7 @@ class HistoricalImageryDb {
     this.connectDb((err, conn) => {
       let selection = recordsTable;
       if (options.filters) {
-        selection = selection.filter(options.filters);
+        selection = filterRecords(selection, options.filters);
       }
       paginate(selection, options)
         .run(conn, toArray(callback));
@@ -131,12 +148,19 @@ class HistoricalImageryDb {
   }
 
 
+  /**
+  * Gets record identified by id
+  */
   getRecord(id, callback) {
     this.connectDb((err, conn) => {
       recordsTable.filter({id: id}).run(conn, toOne(callback));
     });
   }
 
+
+  /**
+  * Deletes record identified by id
+  */
   deleteRecord(id, callback) {
     this.connectDb((err, conn) => {
       recordsTable.get(id).delete().run(conn, callback);

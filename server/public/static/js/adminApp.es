@@ -46,40 +46,46 @@ adminApp.config(['NgAdminConfigurationProvider', 'HOST', 'COUNTIES', (nga, HOST,
     .fields([
       nga.field('id').label('ID'),
       nga.field('AcquiringAgency').label('Acquiring Agency'),
-      //TODO: this fires a request for each record, which is kinda goofy
-      // might be better to manually manage the counties
       nga.field('CountyFIPS')
         .label('County')
         .map((val) => {
           return `${COUNTIES[val]}\n${val}`  || 'UNKOWN';
         }),
       nga.field('Date', 'date'),
-      nga.field('IndexType'),
-      nga.field('IsPublic', 'boolean'),
-      nga.field('LocationCode'),
+      nga.field('IndexType').label('Index Type'),
+      nga.field('IsPublic', 'boolean').label('Public'),
+      nga.field('LocationCode').label('Location Code'),
       nga.field('Medium'),
-      nga.field('PrintType', 'choice')
+      nga.field('PrintType', 'choice').label('Print Type')
         .choices([
           {value: 'B&W', label: 'Black & White'},
           {value: 'COL', label: 'Color'},
           {value: 'CIR', label: 'Color Infrared'}
         ]),
       nga.field('RSDIS'),
-      nga.field('Remarks', 'text'),
+      // nga.field('Remarks', 'text'),
       nga.field('Scale', 'number')
     ])
     .filters([
       nga.field('CountyFIPS', 'choice')
         .label('County')
         .choices(countyChoices),
+      nga.field('Year')
+        .label('Min Year')
+        .attributes({placeholder: 'Minimum Year', pattern: '[0-9]{4,4}' })
+        .validation({
+          minlength: 4,
+          maxlength: 4
+        }),
       nga.field('IsPublic', 'boolean')
+        .label('Public Only')
     ])
     .listActions(['show', 'edit', 'delete']);
 
   record.showView()
     .fields([
       record.listView().fields(),
-      nga.field('NumFrames', 'number'),
+      nga.field('NumFrames', 'number').label('# of Frames'),
       nga.field('Created', 'datetime'),
       nga.field('Modified', 'datetime'),
       nga.field('Coverage', 'boolean'),
