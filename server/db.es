@@ -1,6 +1,7 @@
 const assert = require('assert');
 const rethink = require('rethinkdb');
 const R = require('ramda');
+const defaults = require('defaults');
 
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
@@ -175,7 +176,11 @@ class HistoricalImageryDb {
   */
   updateRecord(id, params, callback) {
     this.connectDb((err, conn) => {
-      recordsTable.get(id).update(params).run(conn, (err, res) => {
+      //new params with modified date
+      const updateParams = defaults({Modified: Date.now()}, 
+         R.omit(['id', 'Created', 'OrigDBNumber'], params));
+
+      recordsTable.get(id).update(updateParams).run(conn, (err, res) => {
         if (err || !res.replaced) {
           callback(new Error(`Error updating ${id}`));
         }

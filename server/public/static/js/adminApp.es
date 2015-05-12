@@ -115,8 +115,12 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('Format', 'number'),
       nga.field('Mission'),
       nga.field('RSDIS', 'number'),
-      nga.field('Created', 'datetime').editable(false),
-      nga.field('Modified', 'datetime').editable(false)
+      nga.field('Created', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a')
+        .editable(false),
+      nga.field('Modified', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a')
+        .editable(false)
     ]);
 
   // record.creationView();
