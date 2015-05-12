@@ -52,7 +52,7 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('CountyFIPS')
         .label('County')
         .map((val) => {
-          return `${COUNTIES[val]}\n${val}`  || 'UNKOWN';
+          return COUNTIES[val] || 'UNKOWN';
         }),
       nga.field('Date', 'date'),
       nga.field('IsPublic', 'boolean').label('Public'),
