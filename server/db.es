@@ -91,7 +91,9 @@ class HistoricalImageryDb {
     });
   }
 
-
+  /**
+  * Gets count of Counties
+  */
   getCountiesCount(callback) {
     this.connectDb((err, conn) => {
       countiesTable.count().run(conn, (err, count) => {
@@ -101,6 +103,9 @@ class HistoricalImageryDb {
   }
 
 
+  /**
+  * Gets Counties, optionally paginated
+  */
   getCounties(options, callback) {
     if (arguments.length < 2) {
       callback = options;
@@ -111,7 +116,9 @@ class HistoricalImageryDb {
     });
   }
 
-
+  /**
+  * Gets County by its FIPS Code
+  */
   getCountyByFips(fips, callback) {
     this.connectDb((err, conn) => {
       countiesTable.filter({FIPS: fips}).limit(1)
@@ -119,7 +126,9 @@ class HistoricalImageryDb {
     });
   }
 
-
+  /**
+  * Gets count of records, optionally filtered
+  */
   getRecordsCount(options, callback) {
     this.connectDb((err, conn) => {
       let selection = recordsTable;
@@ -133,6 +142,9 @@ class HistoricalImageryDb {
   }
 
 
+  /**
+  * Gets records, optionally filtered and paginated
+  */
   getRecords(options, callback) {
     if (arguments.length < 2) {
       callback = options;
@@ -159,11 +171,35 @@ class HistoricalImageryDb {
 
 
   /**
+  * Updates record identified by id with values in params
+  */
+  updateRecord(id, params, callback) {
+    this.connectDb((err, conn) => {
+      recordsTable.get(id).update(params).run(conn, (err, res) => {
+        if (err || !res.replaced) {
+          callback(new Error(`Error updating ${id}`));
+        }
+        else {
+          callback(null, res);
+        }
+      });
+    });
+  }
+
+
+  /**
   * Deletes record identified by id
   */
   deleteRecord(id, callback) {
     this.connectDb((err, conn) => {
-      recordsTable.get(id).delete().run(conn, callback);
+      recordsTable.get(id).delete().run(conn, (err, res) => {
+        if (err || !res.deleted) {
+          callback(new Error(`Error deleting ${id}`));
+        }
+        else {
+          callback(null, res);
+        }
+      });
     });
   }
 

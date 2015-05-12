@@ -61,7 +61,7 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('PrintType', 'choice')
         .label('Print Type')
         .choices(PRINT_TYPES),
-      nga.field('RSDIS'),
+      nga.field('RSDIS', 'number'),
       nga.field('Scale', 'number')
     ])
     .filters([
@@ -86,7 +86,7 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('Created', 'datetime'),
       nga.field('Modified', 'datetime'),
       nga.field('Coverage', 'boolean'),
-      nga.field('Format'),
+      nga.field('Format', 'number'),
       nga.field('Mission')
     ]);
 
@@ -112,11 +112,11 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('Remarks', 'text'),
       nga.field('Scale', 'number'),
       nga.field('Coverage', 'boolean'),
-      nga.field('Format'),
+      nga.field('Format', 'number'),
       nga.field('Mission'),
-      nga.field('RSDIS'),
-      nga.field('Created', 'date').editable(false),
-      nga.field('Modified', 'date').editable(false)
+      nga.field('RSDIS', 'number'),
+      nga.field('Created', 'datetime').editable(false),
+      nga.field('Modified', 'datetime').editable(false)
     ]);
 
   // record.creationView();
