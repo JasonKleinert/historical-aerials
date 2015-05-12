@@ -2,6 +2,8 @@
 const adminApp = angular.module('HistoricalAerialsAdmin', ['ng-admin', 'ConfigApp']);
 
 adminApp.config((RestangularProvider) => {
+  //Configure Restangular to remove underscores from ng-admin's
+  //paging, sorting, and filtering parameters
   RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
     function rmUnderscore(origParam) {
       if (origParam.indexOf('_') !== 0) {
@@ -61,7 +63,8 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('PrintType', 'choice')
         .label('Print Type')
         .choices(PRINT_TYPES),
-      nga.field('RSDIS', 'number'),
+      nga.field('RSDIS', 'number')
+        .format('0'),
       nga.field('Scale', 'number')
     ])
     .filters([
@@ -90,45 +93,80 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('Mission')
     ]);
 
+
+  const createEditFields = [
+    nga.field('AcquiringAgency')
+      .label('Acquiring Agency')
+      .validation({required: true}),
+    nga.field('CountyFIPS', 'choice')
+      .label('County')
+      .choices(countyChoices)
+      .validation({required: true}),
+    nga.field('Date', 'date')
+      .validation({required: true}),
+    nga.field('IsPublic', 'boolean')
+      .label('Public'),
+    nga.field('IndexType')
+      .label('Index Type'),
+    nga.field('LocationCode')
+      .label('Location Code'),
+    nga.field('Medium', 'choice')
+      .choices(MEDIUMS)
+      .validation({required: true}),
+    nga.field('PrintType', 'choice')
+      .label('Print Type')
+      .choices(PRINT_TYPES)
+      .validation({required: true}),
+    nga.field('NumFrames', 'number')
+      .label('# of Frames'),
+    nga.field('Remarks', 'text'),
+    nga.field('Scale', 'number'),
+    nga.field('Coverage', 'boolean'),
+    nga.field('Format', 'number'),
+    nga.field('Mission'),
+    nga.field('RSDIS', 'number')
+      .format('0')
+  ];
+
   record.editionView()
     .title('Edit Record')
     .actions(['show', 'delete'])
-    .fields([
-      nga.field('id').label('ID').editable(false),
-      nga.field('AcquiringAgency').label('Acquiring Agency'),
-      nga.field('CountyFIPS', 'choice')
-        .label('County')
-        .choices(countyChoices),
-      nga.field('Date', 'date'),
-      nga.field('IsPublic', 'boolean').label('Public'),
-      nga.field('IndexType').label('Index Type'),
-      nga.field('LocationCode').label('Location Code'),
-      nga.field('Medium', 'choice')
-        .choices(MEDIUMS),
-      nga.field('PrintType', 'choice')
-        .label('Print Type')
-        .choices(PRINT_TYPES),
-      nga.field('NumFrames', 'number').label('# of Frames'),
-      nga.field('Remarks', 'text'),
-      nga.field('Scale', 'number'),
-      nga.field('Coverage', 'boolean'),
-      nga.field('Format', 'number'),
-      nga.field('Mission'),
-      nga.field('RSDIS', 'number'),
-      nga.field('Created', 'datetime')
-        .format('yyyy-MM-dd hh:mm:ss a')
-        .editable(false),
-      nga.field('Modified', 'datetime')
-        .format('yyyy-MM-dd hh:mm:ss a')
-        .editable(false)
-    ]);
+    .fields(
+      [nga.field('id').label('ID').editable(false)]
+        .concat(createEditFields)
+        .concat([
+          nga.field('Created', 'datetime')
+            .format('yyyy-MM-dd hh:mm:ss a')
+            .editable(false),
+          nga.field('Modified', 'datetime')
+            .format('yyyy-MM-dd hh:mm:ss a')
+            .editable(false)
+        ])
+    );
 
-  // record.creationView();
+  record.creationView()
+    .title('Create New Record')
+    .fields([].concat(createEditFields));
 
   app.addEntity(record);
 
   nga.configure(app);
 });
 
-adminApp.controller('Main', () => {
+
+adminApp.run(($rootScope, $state, $location) => {
+  const endsWith = function(s, suffix) {
+    return s.indexOf(suffix, s.length - suffix.length) !== -1;
+  };
+
+  //This is a slight hack to correct https://github.com/marmelab/ng-admin/issues/423
+  //It just removes the trailing slash when going to /entity/list/
+  $rootScope.$watch(() => $location.absUrl(), (absUrl) => {
+    if (endsWith(absUrl, '/list/')) {
+      const path = $location.path();
+      $location.path(path.substring(0, path.length-1));
+    }
+  });
 });
+
+adminApp.controller('Main', () => {});

@@ -17,7 +17,7 @@ server.views({
     html: {
       module: swig,
       compileOptions: {
-        varControls: ['{<','>}']
+        varControls: ["(>'.')>","<('.'<)"]
       }
     }
   },

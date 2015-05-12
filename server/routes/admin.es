@@ -77,28 +77,11 @@ module.exports = (server, config, pathPrefix='') => {
         params: {
           id: Joi.string().required()
         },
-        payload: {
-          //Joi doesn't allow empty strings even as optional
-          // so have to use allow('') on them ref: https://github.com/hapijs/joi/issues/482
-          AcquiringAgency: Joi.string().allow('').optional(),
-          CountyFIPS: Joi.number().integer().required(),
-          Date: Joi.date().optional(),
-          IsPublic: Joi.boolean().required(),
-          IndexType: Joi.string().allow('').optional(),
-          LocationCode: Joi.string().allow('').optional(),
-          Medium: Joi.string().required(),
-          PrintType: Joi.string().required(),
-          NumFrames: Joi.number().integer().optional(),
-          Remarks: Joi.string().allow('').optional(),
-          Scale: Joi.number().optional(),
-          Coverage: Joi.boolean().required(),
-          Format: Joi.number().integer().optional(),
-          Mission: Joi.string().allow('').optional(),
-          RSDIS: Joi.number().integer('').optional(),
+        payload: extend({
           Created: Joi.any().strip(),
           Modified: Joi.any().strip(),
           id: Joi.any().strip()
-        }
+        }, lib.creationValidation)
       }
     },
     handler: (request, reply) => {
@@ -112,6 +95,26 @@ module.exports = (server, config, pathPrefix='') => {
     }
   });
 
+
+  server.route({
+    method: 'POST',
+    path: `${apiPre}/records`,
+    config: {
+      validate: {
+        payload: lib.creationValidation
+      }
+    },
+    handler: (request, reply) => {
+      clog.info(request.payload);
+      db.createRecord(request.payload, (err, recordId) => {
+        if (err) {
+          clog.error(err);
+          return reply(Boom.badImplementation('Unable to create new record'));
+        }
+        reply(recordId);
+      });
+    }
+  });
 
   server.route({
     method: 'DELETE',

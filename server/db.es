@@ -172,6 +172,29 @@ class HistoricalImageryDb {
 
 
   /**
+  * Creates record with values in params
+  */
+  createRecord(params, callback) {
+    this.connectDb((err, conn) => {
+      
+      const createParams = defaults({
+        Created: Date.now(),
+        Modified: Date.now()
+      }, params);
+
+      recordsTable.insert(createParams).run(conn, (err, res) => {
+        if (err || !res.inserted || !res.generated_keys.length) {
+          callback(new Error('Error creating new record'));
+        }
+        else {
+          this.getRecord(res.generated_keys[0], callback);
+        }
+      });
+    });
+  }
+
+
+  /**
   * Updates record identified by id with values in params
   */
   updateRecord(id, params, callback) {
