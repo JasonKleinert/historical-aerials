@@ -124,10 +124,6 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     ]);
 
   // record.creationView();
-  // record.editionView()
-  //   .fields([
-  //   ]);
-
 
   app.addEntity(record);
 
