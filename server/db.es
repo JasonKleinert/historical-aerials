@@ -2,9 +2,17 @@ const assert = require('assert');
 const rethink = require('rethinkdb');
 const R = require('ramda');
 const defaults = require('defaults');
+const bcrypt = require('bcrypt');
 
+const usersTable = rethink.table('Users');
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
+
+function hashPassword(password) {
+  const salt = bcrypt.genSaltSync();
+  const hashedPassword = bcrypt.hashSync(password, salt);
+  return hashedPassword;
+}
 
 function paginate(selection, options) {
   if (!options) { 
@@ -27,6 +35,9 @@ function paginate(selection, options) {
 }
 
 function filterRecords(selection, filterOpts) {
+  if (!filterOpts) {
+    return selection;
+  }
   let opts = R.clone(filterOpts);
   //special handling to filter by Year where we find records with Date
   // year greater than or equal to given Year
@@ -75,6 +86,7 @@ function toOne(callback) {
   };
 }
 
+
 class HistoricalImageryDb {
   constructor(config) {
     this.config = config;
@@ -92,15 +104,144 @@ class HistoricalImageryDb {
     });
   }
 
+  getOne(table) {
+    //params should be a reql query object, like {id: 123}
+    return (params, callback) => {
+      this.connectDb((err, conn) => {
+        table.filter(params).limit(1).run(conn, toOne(callback));
+      });
+    };
+  }
+
+  deleteOne(table) {
+    return (id, callback) => {
+      this.connectDb((err, conn) => {
+        table.get(id).delete().run(conn, (err, res) => {
+          if (err || !res.deleted) {
+            callback(new Error(`Error deleting ${id}`));
+          }
+          else {
+            callback(null, res);
+          }
+        });
+      });
+    };
+  }
+
+  getCount(table) {
+    return (options, callback) => {
+      this.connectDb((err, conn) => {
+        let selection = table;
+        if (options.filters) {
+          selection = filterRecords(selection, options.filters);
+        }
+        selection.count().run(conn, (err, count) => {
+          callback(null, count);
+        });
+      });
+    };
+  }
+
+  getMultiple(table) {
+    return (options, callback) => {
+      if (!callback) {
+        callback = options;
+        options = {};
+      }
+      this.connectDb((err, conn) => {
+        let selection = table;
+        if (options.filters) {
+          selection = filterRecords(selection, options.filters);
+        }
+        paginate(selection, options)
+          .run(conn, toArray(callback));
+      });
+    };
+  }
+
+
+  /**
+  * Gets Users
+  */
+  getUsers(options, callback) {
+    this.getMultiple(usersTable)(options, callback);
+  }
+
+  /**
+  * Gets count of all users
+  */
+  getUsersCount(options, callback) {
+    this.getCount(usersTable)(options, callback);
+  }
+
+  /**
+  * Gets User by id
+  */
+  getUser(id, callback) {
+    return this.getOne(usersTable)({id}, callback);
+  }
+
+  getUserByEmail(emailAddress, callback) {
+    return this.getOne(usersTable)({emailAddress}, callback);
+  }
+
+  createUser(params, callback) {
+    if (!params.emailAddress || !params.password) {
+      throw new Error('Missing required emailAddress and password params');
+    }
+    this.connectDb((err, conn) => {
+      const createParams = {
+        emailAddress: params.emailAddress,
+        password: hashPassword(params.password),
+        Created: Date.now(),
+        Modified: Date.now()
+      };
+
+      usersTable.insert(createParams).run(conn, (err, res) => {
+        if (err || !res.inserted || !res.generated_keys.length) {
+          callback(new Error('Error creating new user'));
+        }
+        else {
+          this.getRecord(res.generated_keys[0], callback);
+        }
+      });
+    });
+  }
+
+  updateUser(id, params, callback) {
+    this.connectDb((err, conn) => {
+      let updateParams = {
+        Modified: Date.now()
+      };
+
+      if (params.password) {
+        updateParams.password = hashPassword(params.password);
+      }
+      if (params.emailAddress) {
+        updateParams.emailAddress = params.emailAddress;
+      }
+
+      usersTable.get(id).update(updateParams).run(conn, (err, res) => {
+        if (err || !res.replaced) {
+          callback(new Error(`Error updating ${id}`));
+        }
+        else {
+          callback(null, res);
+        }
+      });
+    });
+  }
+
+  deleteUser(id, callback) {
+    this.deleteOne(usersTable)(id, callback);
+  }
+
+
   /**
   * Gets count of Counties
   */
   getCountiesCount(callback) {
-    this.connectDb((err, conn) => {
-      countiesTable.count().run(conn, (err, count) => {
-        callback(null, count);
-      });
-    });
+    this.getCount(countiesTable)({}, callback);
   }
 
 
@@ -108,14 +249,9 @@ class HistoricalImageryDb {
   * Gets Counties, optionally paginated
   */
   getCounties(options, callback) {
-    if (arguments.length < 2) {
-      callback = options;
-    }
-    this.connectDb((err, conn) => {
-      paginate(countiesTable, options)
-        .run(conn, toArray(callback));
-    });
+    this.getMultiple(countiesTable)(options, callback);
   }
+
 
   /**
   * Gets County by its FIPS Code
@@ -131,15 +267,7 @@ class HistoricalImageryDb {
   * Gets count of records, optionally filtered
   */
   getRecordsCount(options, callback) {
-    this.connectDb((err, conn) => {
-      let selection = recordsTable;
-      if (options.filters) {
-        selection = filterRecords(selection, options.filters);
-      }
-      selection.count().run(conn, (err, count) => {
-        callback(null, count);
-      });
-    });
+    this.getCount(recordsTable)(options, callback);
   }
 
 
@@ -147,17 +275,7 @@ class HistoricalImageryDb {
   * Gets records, optionally filtered and paginated
   */
   getRecords(options, callback) {
-    if (arguments.length < 2) {
-      callback = options;
-    }
-    this.connectDb((err, conn) => {
-      let selection = recordsTable;
-      if (options.filters) {
-        selection = filterRecords(selection, options.filters);
-      }
-      paginate(selection, options)
-        .run(conn, toArray(callback));
-    });
+    this.getMultiple(recordsTable)(options, callback);
   }
 
 
@@ -165,9 +283,7 @@ class HistoricalImageryDb {
   * Gets record identified by id
   */
   getRecord(id, callback) {
-    this.connectDb((err, conn) => {
-      recordsTable.filter({id: id}).run(conn, toOne(callback));
-    });
+    this.getOne(recordsTable)({id}, callback);
   }
 
 
@@ -219,16 +335,7 @@ class HistoricalImageryDb {
   * Deletes record identified by id
   */
   deleteRecord(id, callback) {
-    this.connectDb((err, conn) => {
-      recordsTable.get(id).delete().run(conn, (err, res) => {
-        if (err || !res.deleted) {
-          callback(new Error(`Error deleting ${id}`));
-        }
-        else {
-          callback(null, res);
-        }
-      });
-    });
+    this.deleteOne(recordsTable)(id, callback);
   }
 
 }

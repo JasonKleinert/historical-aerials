@@ -40,10 +40,7 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
   const record = nga.entity('records');
 
   record.dashboardView()
-    .title('Historical Aerial Imagery Records')
-    .order(1)
-    ;
-
+    .title('Historical Aerial Imagery Records');
 
   const listShowFields = [
     nga.field('AcquiringAgency')
@@ -87,9 +84,9 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       nga.field('IsPublic', 'boolean')
         .label('Public Only')
     ])
+    .batchActions([])
     .listActions(['show', 'edit']);
 
-  //TODO: Can't click id link to edit
   record.showView()
     .title('Record Details')
     .fields(
@@ -98,8 +95,10 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       .concat([
         nga.field('NumFrames', 'number')
           .label('# of Frames'),
-        nga.field('Created', 'datetime'),
-        nga.field('Modified', 'datetime'),
+        nga.field('Created', 'datetime')
+          .format('yyyy-MM-dd hh:mm:ss a'),
+        nga.field('Modified', 'datetime')
+          .format('yyyy-MM-dd hh:mm:ss a'),
         nga.field('Coverage', 'boolean'),
         nga.field('FrameSize', 'number')
           .label('Frame Size (inches)'),
@@ -168,6 +167,64 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     .fields([].concat(createEditFields));
 
   app.addEntity(record);
+
+  //---------------------
+  const user = nga.entity('users');
+
+  user.listView().title('Admin Users')
+    .fields([
+      nga.field('emailAddress')
+        .label('Email Address')
+        .isDetailLink(true),
+      nga.field('Created', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a'),
+      nga.field('Modified', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a')
+    ])
+    .batchActions([])
+    .listActions(['show', 'edit']);
+
+  user.creationView().title('Create User')
+    .fields([
+      nga.field('emailAddress', 'email')
+        .label('Email Address')
+        .validation({required: true}),
+      nga.field('password', 'password')
+        .label('Password')
+        .validation({required: true, minlength: 6}),
+      nga.field('repeatPassword', 'password')
+        .label('Repeat Password')
+        .validation({required: true, minlength: 6})
+    ]);
+
+  user.showView().title('User')
+    .fields([
+      nga.field('emailAddress', 'email')
+        .label('Email Address'),
+      nga.field('Created', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a'),
+      nga.field('Modified', 'datetime')
+        .format('yyyy-MM-dd hh:mm:ss a')
+    ])
+    .actions(['edit']);
+
+  user.editionView()
+    .title('Edit User')
+    .actions(['show', 'delete'])
+    .fields([
+      nga.field('emailAddress', 'email')
+        .label('Email Address')
+        .validation({required: true}),
+      nga.field('password', 'password')
+        .label('Password')
+        .validation({minlength: 6}),
+      nga.field('repeatPassword', 'password')
+        .label('Repeat Password')
+        .validation({minlength: 6})
+    ]);
+
+
+  app.addEntity(user);
 
   nga.configure(app);
 });

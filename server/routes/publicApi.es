@@ -3,6 +3,7 @@ const Boom = require('boom');
 const extend = require('extend');
 const R = require('ramda');
 
+const config = require('../../config');
 const lib = require('../common');
 
 const pickRecordFields = R.pick([
@@ -13,13 +14,14 @@ const pickCountyFields = R.pick(
   ['Name', 'FIPS']
 );
 
-module.exports = (server, config, pathPrefix='') => {
+module.exports = (server, pathPrefix) => {
   const db = require('./../db')(config);
 
   server.route({
     method: 'GET',
     path: `${pathPrefix}/counties/{fips?}`,
     config: {
+      auth: false,
       validate: {
         params: {
           fips: Joi.number().integer().optional()
@@ -52,6 +54,7 @@ module.exports = (server, config, pathPrefix='') => {
     method: 'GET',
     path: `${pathPrefix}/records`,
     config: {
+      auth: false,
       validate: {
         query: extend({
           countyFips: Joi.number().integer().required()

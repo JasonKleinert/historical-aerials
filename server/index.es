@@ -2,9 +2,11 @@
 const Hapi = require('hapi');
 const swig = require('swig');
 const clog = require('clog');
+const basicAuth = require('hapi-auth-basic');
 
 const logging = require('./logging');
 const config = require('../config');
+const auth = require('./auth');
 
 const server = new Hapi.Server();
 server.connection({
@@ -24,14 +26,12 @@ server.views({
   path: './server/views'
 });
 
-
-//TODO: alternative way of setting up routes: https://github.com/pamo/hapi-todo/
-require('./routes/api')(server, config, '/api/v1');
-require('./routes/admin')(server, config, '/admin');
-
 server.route({
   method: 'GET',
   path: '/static/{param*}',
+  config: {
+    auth: false
+  },
   handler: {
     directory: {
       path: 'server/public/static'
@@ -39,14 +39,23 @@ server.route({
   }
 });
 
-server.register([logging], (err) => {
+server.register([logging, basicAuth], (err) => {
   if (err) {
     clog.error(err);
+    return;
   }
-  else {
-    server.start(() => {
-      clog.info(`Server running at ${server.info.uri}`);
-    });
-  }
+
+  server.auth.strategy('simple', 'basic', 'required', 
+    {validateFunc: auth.validate}
+  );
+
+  require('./routes/publicApi')(server, '/api/v1');
+  require('./routes/admin')(server, '/admin');
+  require('./routes/recordsApi')(server, '/admin/api');
+  require('./routes/usersApi')(server, '/admin/api');
+
+  server.start(() => {
+    clog.info(`Server running at ${server.info.uri}`);
+  });
 });
 

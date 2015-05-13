@@ -19,6 +19,7 @@ const accessTable = 'Aerial_Info';
 
 const rdbTable = 'ImageryRecords';
 const rdbCountiesTable = 'Counties';
+const rdbUsersTable = 'Users';
 const rdbName = config.db_name;
 
 // Array of existing entry DB_No IDs that can be skipped for ETL
@@ -88,6 +89,9 @@ function setupDb(callback) {
         },
         (cb) => {
           dropAndCreate(rdbCountiesTable, connection, cb);
+        },
+        (cb) => {
+          dropAndCreate(rdbUsersTable, connection, cb);
         }
       ], () => {
         connection.close();
