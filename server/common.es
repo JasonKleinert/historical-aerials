@@ -20,14 +20,14 @@ module.exports = {
     IsPublic: Joi.boolean().required(),
     IndexType: Joi.string().allow('').allow(null).optional(),
     LocationCode: Joi.string().allow('').allow(null).optional(),
-    Medium: Joi.string().required(),
+    Medium: Joi.string().allow('').allow(null).optional(),
     PrintType: Joi.string().required(),
-    NumFrames: Joi.number().integer().allow(null).optional(),
+    NumFrames: Joi.number().integer().required(),
     Remarks: Joi.string().allow('').allow(null).optional(),
-    Scale: Joi.number().allow(null).optional(),
+    Scale: Joi.number().integer().required(),
     Coverage: Joi.boolean().required(),
-    Format: Joi.number().integer().allow(null).optional(),
-    Mission: Joi.string().allow('').allow(null).optional(),
+    Format: Joi.number().integer().required(),
+    Mission: Joi.string().required(),
     RSDIS: Joi.number().integer().allow(null).optional()
   }
 

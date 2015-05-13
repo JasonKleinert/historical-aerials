@@ -111,19 +111,22 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     nga.field('LocationCode')
       .label('Location Code'),
     nga.field('Medium', 'choice')
-      .choices(MEDIUMS)
-      .validation({required: true}),
+      .choices(MEDIUMS),
     nga.field('PrintType', 'choice')
       .label('Print Type')
       .choices(PRINT_TYPES)
       .validation({required: true}),
     nga.field('NumFrames', 'number')
-      .label('# of Frames'),
+      .label('# of Frames')
+      .validation({required: true}),
     nga.field('Remarks', 'text'),
-    nga.field('Scale', 'number'),
+    nga.field('Scale', 'number')
+      .validation({required: true}),
     nga.field('Coverage', 'boolean'),
-    nga.field('Format', 'number'),
-    nga.field('Mission'),
+    nga.field('Format', 'number')
+      .validation({required: true}),
+    nga.field('Mission')
+      .validation({required: true}),
     nga.field('RSDIS', 'number')
       .format('0')
   ];
