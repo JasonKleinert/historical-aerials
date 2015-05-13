@@ -44,32 +44,36 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     .order(1)
     ;
 
+
+  const listShowFields = [
+    nga.field('AcquiringAgency')
+      .label('Acquiring Agency'),
+    nga.field('CountyFIPS')
+      .label('County')
+      .map((val) => {
+        return COUNTIES[val] || 'UNKOWN';
+      }),
+    nga.field('Date', 'date'),
+    nga.field('IsPublic', 'boolean')
+      .label('Public'),
+    nga.field('IndexType')
+      .label('Index Type'),
+    nga.field('LocationCode')
+      .label('Location Code'),
+    nga.field('Medium', 'choice')
+      .choices(MEDIUMS),
+    nga.field('PrintType', 'choice')
+      .label('Print Type')
+      .choices(PRINT_TYPES),
+    nga.field('Scale', 'number')
+  ];
+
   record.listView()
     .title('Historical Aerial Imagery Records')
-    .fields([
-      nga.field('id')
-        .label('ID'),
-      nga.field('AcquiringAgency')
-        .label('Acquiring Agency'),
-      nga.field('CountyFIPS')
-        .label('County')
-        .map((val) => {
-          return COUNTIES[val] || 'UNKOWN';
-        }),
-      nga.field('Date', 'date'),
-      nga.field('IsPublic', 'boolean')
-        .label('Public'),
-      nga.field('IndexType')
-        .label('Index Type'),
-      nga.field('LocationCode')
-        .label('Location Code'),
-      nga.field('Medium', 'choice')
-        .choices(MEDIUMS),
-      nga.field('PrintType', 'choice')
-        .label('Print Type')
-        .choices(PRINT_TYPES),
-      nga.field('Scale', 'number')
-    ])
+    .fields(
+      [nga.field('id').label('ID').detailLinkRoute('show')]
+      .concat(listShowFields)
+    )
     .filters([
       nga.field('CountyFIPS', 'choice')
         .label('County')
@@ -87,17 +91,21 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
 
   //TODO: Can't click id link to edit
   record.showView()
-    .fields([
-      record.listView().fields(),
-      nga.field('NumFrames', 'number')
-        .label('# of Frames'),
-      nga.field('Created', 'datetime'),
-      nga.field('Modified', 'datetime'),
-      nga.field('Coverage', 'boolean'),
-      nga.field('FrameSize', 'number')
-        .label('Frame Size (inches)'),
-      nga.field('Mission')
-    ])
+    .title('Record Details')
+    .fields(
+      [nga.field('id').label('ID').isDetailLink(false)]
+      .concat(listShowFields)
+      .concat([
+        nga.field('NumFrames', 'number')
+          .label('# of Frames'),
+        nga.field('Created', 'datetime'),
+        nga.field('Modified', 'datetime'),
+        nga.field('Coverage', 'boolean'),
+        nga.field('FrameSize', 'number')
+          .label('Frame Size (inches)'),
+        nga.field('Mission')
+      ])
+    )
     .actions(['edit']);
 
 
@@ -141,7 +149,7 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     .title('Edit Record')
     .actions(['show', 'delete'])
     .fields(
-      [nga.field('id').label('ID').editable(false)]
+      [nga.field('id').label('ID').editable(false).isDetailLink(false)]
         .concat(createEditFields)
         .concat([
           nga.field('RSDIS')
