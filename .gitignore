@@ -2,7 +2,7 @@ rethinkdb_data/
 bower_components/
 data/*.accdb
 
-*/config/production.json
+config/production.json
 
 .dist
 
