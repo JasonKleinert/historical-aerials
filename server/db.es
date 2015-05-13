@@ -4,7 +4,7 @@ const R = require('ramda');
 const defaults = require('defaults');
 const bcrypt = require('bcrypt');
 
-const usersTable = rethink.table('Users');
+const usersTable = rethink.table('Users').without('password');
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
 
@@ -181,8 +181,10 @@ class HistoricalImageryDb {
     this.getOne(usersTable)({id}, callback);
   }
 
-  getUserByEmail(emailAddress, callback) {
-    this.getOne(usersTable)({emailAddress}, callback);
+  getUserByEmailWithPassword(emailAddress, callback) {
+    this.connectDb((err, conn) => {
+      rethink.table('Users').filter({emailAddress}).limit(1).run(conn, toOne(callback));
+    });
   }
 
   createUser(params, callback) {

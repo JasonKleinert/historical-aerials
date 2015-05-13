@@ -16,7 +16,7 @@ function validate(emailAddress, password, callback) {
     return;
   }
 
-  db.getUserByEmail(emailAddress, (err, user) => {
+  db.getUserByEmailWithPassword(emailAddress, (err, user) => {
     if (err || !user) {
       callback(null, false);
       return;
