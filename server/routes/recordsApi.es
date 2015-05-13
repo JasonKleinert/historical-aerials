@@ -83,12 +83,12 @@ module.exports = (server, pathPrefix) => {
       }
     },
     handler: (request, reply) => {
-      db.createRecord(request.payload, (err, recordId) => {
+      db.createRecord(request.payload, (err, newRecord) => {
         if (err) {
           clog.error(err);
           return reply(Boom.badImplementation('Unable to create new record'));
         }
-        reply(recordId);
+        reply(newRecord);
       });
     }
   });

@@ -178,11 +178,11 @@ class HistoricalImageryDb {
   * Gets User by id
   */
   getUser(id, callback) {
-    return this.getOne(usersTable)({id}, callback);
+    this.getOne(usersTable)({id}, callback);
   }
 
   getUserByEmail(emailAddress, callback) {
-    return this.getOne(usersTable)({emailAddress}, callback);
+    this.getOne(usersTable)({emailAddress}, callback);
   }
 
   createUser(params, callback) {
@@ -202,7 +202,7 @@ class HistoricalImageryDb {
           callback(new Error('Error creating new user'));
         }
         else {
-          this.getRecord(res.generated_keys[0], callback);
+          this.getUser(res.generated_keys[0], callback);
         }
       });
     });

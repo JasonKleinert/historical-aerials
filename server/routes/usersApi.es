@@ -90,12 +90,12 @@ module.exports = (server, pathPrefix) => {
       }
     },
     handler: (request, reply) => {
-      db.createUser(request.payload, (err, userId) => {
+      db.createUser(request.payload, (err, newUser) => {
         if (err) {
           clog.error(err);
           return reply(Boom.badImplementation('Unable to create new user'));
         }
-        reply(userId);
+        reply(pickUserFields(newUser));
       });
     }
   });
