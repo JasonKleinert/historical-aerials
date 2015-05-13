@@ -26,7 +26,7 @@ module.exports = {
     Remarks: Joi.string().allow('').allow(null).optional(),
     Scale: Joi.number().integer().required(),
     Coverage: Joi.boolean().required(),
-    Format: Joi.number().integer().required(),
+    FrameSize: Joi.number().integer().required(),
     Mission: Joi.string().required(),
     RSDIS: Joi.number().integer().allow(null).optional()
   }

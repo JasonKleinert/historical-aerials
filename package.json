@@ -1,10 +1,15 @@
 {
-  "name": "aerial-database",
+  "name": "historical-aerials-database",
   "version": "1.0.0",
   "description": "TNRIS historical aerial imagery catalogue and API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TNRIS/historical-aerials"
+  },
   "main": "server/index.es",
   "dependencies": {
     "async": "^0.9.0",
+    "bell": "^2.7.1",
     "boom": "^2.7.1",
     "clog": "^0.1.6",
     "defaults": "^1.0.2",
@@ -13,6 +18,7 @@
     "good": "^6.1.2",
     "good-console": "^5.0.0",
     "hapi": "^8.4.0",
+    "hapi-auth-basic": "^2.0.0",
     "joi": "^6.4.1",
     "mdb": "^0.1.0",
     "ramda": "^0.13.0",

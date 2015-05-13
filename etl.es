@@ -185,7 +185,7 @@ function translateRecords(rows, callback) {
       OrigDBNumber: tryparse.int(row.DB_No), //original Access PK
       Date: parseDate(row.Date, row.DB_No),
       // FirstFrame: tryparse.int(row.First_frame), //NOT NEEDED - unused generally
-      Format: tryparse.int(row.Format),
+      FrameSize: tryparse.int(row.Format),
       IndexType: row.Index_type,
       LocationCode: row.Location_code, //internal location index/code
       Mission: row.MSN,

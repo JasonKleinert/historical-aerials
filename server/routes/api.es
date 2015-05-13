@@ -5,9 +5,9 @@ const R = require('ramda');
 
 const lib = require('../common');
 
-const pickRecordFields = R.pick(
-  ['AcquiringAgency', 'CountyFIPS', 'Date', 'PrintType', 'Scale']
-);
+const pickRecordFields = R.pick([
+  'AcquiringAgency', 'CountyFIPS', 'Date', 'PrintType', 'Scale', 'NumFrames'
+]);
 
 const pickCountyFields = R.pick(
   ['Name', 'FIPS']
