@@ -16,4 +16,14 @@ angular.module('ConfigApp', [])
     {value: 'COL', label: 'Color'},
     {value: 'CIR', label: 'Color Infrared'}
   ])
+  .constant('INDEX_TYPES', [
+    {value: null, label: 'Not Specified'},
+    {value: 'L', label: 'L'},
+    {value: 'LM', label: 'LM'},
+    {value: 'LP', label: 'LP'},
+    {value: 'M', label: 'M'},
+    {value: 'MP', label: 'MP'},
+    {value: 'P', label: 'P'},
+    {value: 'LMP', label: 'LMP'}
+  ])
   ;

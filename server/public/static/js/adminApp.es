@@ -27,7 +27,7 @@ adminApp.config((RestangularProvider) => {
   });
 });
 
-adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TYPES) => {
+adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TYPES, INDEX_TYPES) => {
   const nga = NgAdminConfigurationProvider;
 
   const app = nga.application('TNRIS Historical Aerial Imagery Admin');
@@ -53,8 +53,9 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
     nga.field('Date', 'date'),
     nga.field('IsPublic', 'boolean')
       .label('Public'),
-    nga.field('IndexType')
-      .label('Index Type'),
+    nga.field('IndexType', 'choice')
+      .label('Index Type')
+      .choices(INDEX_TYPES),
     nga.field('LocationCode')
       .label('Location Code'),
     nga.field('Medium', 'choice')
@@ -120,8 +121,9 @@ adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TY
       .validation({required: true}),
     nga.field('IsPublic', 'boolean')
       .label('Public'),
-    nga.field('IndexType')
-      .label('Index Type'),
+    nga.field('IndexType', 'choice')
+      .label('Index Type')
+      .choices(INDEX_TYPES),
     nga.field('LocationCode')
       .label('Location Code'),
     nga.field('Medium', 'choice')
