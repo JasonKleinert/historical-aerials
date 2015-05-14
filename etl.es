@@ -40,7 +40,7 @@ const countyFips = (() => {
 const acquiringAgencyNames = require('./data/acquiringAgencies.json');
 const badCountyNameMap = require('./data/badCounties.json');
 const badMediumNameMap = require('./data/badMediums.json');
-
+const badIndexTypeMap = require('./data/badIndexTypes.json');
 
 async.waterfall([
   setupDb,
@@ -178,6 +178,16 @@ function getMedium(medium) {
   return badMediumNameMap[medium] || medium;
 }
 
+function getIndexType(indexType) {
+  indexType = upper(indexType);
+  if (badIndexTypeMap.hasOwnProperty(indexType)) {
+    return badIndexTypeMap[indexType];
+  }
+  if (indexType === "") {
+    return null;
+  }
+  return indexType;
+}
 
 function translateRecords(rows, callback) {
   const newRows = rows.map((row) => {
@@ -190,7 +200,7 @@ function translateRecords(rows, callback) {
       Date: parseDate(row.Date, row.DB_No),
       // FirstFrame: tryparse.int(row.First_frame), //NOT NEEDED - unused generally
       FrameSize: tryparse.int(row.Format),
-      IndexType: row.Index_type,
+      IndexType: getIndexType(row.Index_type),
       LocationCode: row.Location_code, //internal location index/code
       Mission: row.MSN,
       Medium: getMedium(row.Medium),
