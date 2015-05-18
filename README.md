@@ -1,8 +1,6 @@
 Install rethink: http://www.rethinkdb.com/docs/install/ubuntu/
 
-Install mdbtools `apt-get install mdbtools`
-
-Install local packages `npm install`
+Install packages `npm install`
 
 ## Development
 
@@ -11,6 +9,8 @@ Install local packages `npm install`
 ### ETL
 
 Download the original database file from https://s3-us-west-2.amazonaws.com/tnris-misc/historical-aerials/Aerial_database_20150504.accdb and place in `data/`
+
+`apt-get install mdbtools` to install mdbtools, which is required for reading the Access database
 
 `npm run etl` to rebuild the new Rethink database from the original Access database
 
