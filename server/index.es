@@ -56,6 +56,7 @@ server.register([logging, basicAuth], (err) => {
 
   server.start(() => {
     clog.info(`Server running at ${server.info.uri}`);
+    clog.info(`Using Rethink db at ${config.db_host}:${config.db_port}`);
   });
 });
 
