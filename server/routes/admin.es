@@ -16,7 +16,8 @@ module.exports = (server, pathPrefix) => {
         }, {});
 
         reply.view('admin/index', {
-          counties: countiesByFips
+          counties: countiesByFips,
+          basePath: config.basePath
         }); 
       });
     }

@@ -34,7 +34,7 @@ server.route({
   },
   handler: {
     directory: {
-      path: 'server/public/static'
+      path: './server/public/static'
     }
   }
 });

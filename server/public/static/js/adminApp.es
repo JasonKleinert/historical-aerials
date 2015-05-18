@@ -27,11 +27,11 @@ adminApp.config((RestangularProvider) => {
   });
 });
 
-adminApp.config((NgAdminConfigurationProvider, HOST, COUNTIES, MEDIUMS, PRINT_TYPES, INDEX_TYPES) => {
+adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, INDEX_TYPES) => {
   const nga = NgAdminConfigurationProvider;
 
   const app = nga.application('TNRIS Historical Aerial Imagery Admin');
-  app.baseApiUrl(HOST + '/admin/api/');
+  app.baseApiUrl('admin/api/');
 
   const countyChoices = Object.keys(COUNTIES).map((k) => {
     return {value: parseInt(k, 10), label: COUNTIES[k]};

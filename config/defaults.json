@@ -2,5 +2,6 @@
   "port": 3131,
   "db_host": "localhost",
   "db_port": 28015,
-  "db_name": "HistoricalAerialImagery"
+  "db_name": "HistoricalAerialImagery",
+  "basePath": "/"
 }
