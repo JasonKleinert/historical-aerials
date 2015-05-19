@@ -3,8 +3,9 @@ const rethink = require('rethinkdb');
 const R = require('ramda');
 const defaults = require('defaults');
 const bcrypt = require('bcrypt');
+const clog = require('clog');
 
-const usersTable = rethink.table('Users').without('password');
+const usersTable = rethink.table('Users');
 const recordsTable = rethink.table('ImageryRecords');
 const countiesTable = rethink.table('Counties');
 
@@ -118,6 +119,7 @@ class HistoricalImageryDb {
       this.connectDb((err, conn) => {
         table.get(id).delete().run(conn, (err, res) => {
           if (err || !res.deleted) {
+            if (err) { clog.error(err); }
             callback(new Error(`Error deleting ${id}`));
           }
           else {
@@ -164,7 +166,7 @@ class HistoricalImageryDb {
   * Gets Users
   */
   getUsers(options, callback) {
-    this.getMultiple(usersTable)(options, callback);
+    this.getMultiple(usersTable.without('password'))(options, callback);
   }
 
   /**
@@ -178,7 +180,7 @@ class HistoricalImageryDb {
   * Gets User by id
   */
   getUser(id, callback) {
-    this.getOne(usersTable)({id}, callback);
+    this.getOne(usersTable.without('password'))({id}, callback);
   }
 
   getUserByEmailWithPassword(emailAddress, callback) {
@@ -201,6 +203,8 @@ class HistoricalImageryDb {
 
       usersTable.insert(createParams).run(conn, (err, res) => {
         if (err || !res.inserted || !res.generated_keys.length) {
+          if (err) { clog.error(err); }
+          clog.debug(res);
           callback(new Error('Error creating new user'));
         }
         else {
@@ -225,10 +229,11 @@ class HistoricalImageryDb {
 
       usersTable.get(id).update(updateParams).run(conn, (err, res) => {
         if (err || !res.replaced) {
+          if (err) { clog.error(err); }
           callback(new Error(`Error updating ${id}`));
         }
         else {
-          callback(null, res);
+          this.getUser(id, callback);
         }
       });
     });
@@ -302,6 +307,7 @@ class HistoricalImageryDb {
 
       recordsTable.insert(createParams).run(conn, (err, res) => {
         if (err || !res.inserted || !res.generated_keys.length) {
+          if (err) { clog.error(err); }
           callback(new Error('Error creating new record'));
         }
         else {
@@ -326,7 +332,7 @@ class HistoricalImageryDb {
           callback(new Error(`Error updating ${id}`));
         }
         else {
-          callback(null, res);
+          this.getRecord(id, callback);
         }
       });
     });

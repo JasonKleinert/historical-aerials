@@ -29,8 +29,16 @@ adminApp.config((RestangularProvider) => {
 
 adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, INDEX_TYPES) => {
   const nga = NgAdminConfigurationProvider;
-
   const app = nga.application('TNRIS Historical Aerial Imagery Admin');
+
+  var customHeaderTemplate =
+    `<div class="navbar-header">
+        <a class="navbar-brand" ng-click="appController.displayHome()">
+          TNRIS Historical Aerial Imagery Admin
+        </a>
+    </div>`;
+  app.header(customHeaderTemplate);
+
   app.baseApiUrl('admin/api/');
 
   const countyChoices = Object.keys(COUNTIES).map((k) => {
