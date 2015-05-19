@@ -12,7 +12,7 @@ Copy `server/config/production.sample.json` to `server/config/production.json` a
 is properly filled out, paying special attention to either use or resave the `adminPassword` in
 our password repository.
 
-You can copy an existing dump of the database from our backup bucket on S3. Run `rethinkdb-restore backupfile.tar.gz` to restore the dump to your local rethinkdb server.
+You can copy an existing dump of the database from our backup bucket on S3. Run `rethinkdb restore backupfile.tar.gz` to restore the dump to your local rethinkdb server.
 
 `gulp dev` in one terminal to watch and dist source files
 
