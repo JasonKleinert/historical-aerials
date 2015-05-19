@@ -51,16 +51,13 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
     .title('Historical Aerial Imagery Records');
 
   const listShowFields = [
-    nga.field('AcquiringAgency')
-      .label('Acquiring Agency'),
     nga.field('CountyFIPS')
       .label('County')
-      .map((val) => {
-        return COUNTIES[val] || 'UNKOWN';
-      }),
+      .map((val) => COUNTIES[val] || 'UNKOWN'),
+    nga.field('AcquiringAgency')
+      .label('Acquiring Agency'),
     nga.field('Date', 'date'),
-    nga.field('IsPublic', 'boolean')
-      .label('Public'),
+    nga.field('Scale', 'number'),
     nga.field('IndexType', 'choice')
       .label('Index Type')
       .choices(INDEX_TYPES),
@@ -71,7 +68,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
     nga.field('PrintType', 'choice')
       .label('Print Type')
       .choices(PRINT_TYPES),
-    nga.field('Scale', 'number')
+    nga.field('IsPublic', 'boolean')
+      .label('Public')
   ];
 
   record.listView()
