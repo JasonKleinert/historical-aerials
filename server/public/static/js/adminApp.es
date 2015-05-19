@@ -33,9 +33,9 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
 
   var customHeaderTemplate =
     `<div class="navbar-header">
-        <a class="navbar-brand" ng-click="appController.displayHome()">
-          TNRIS Historical Aerial Imagery Admin
-        </a>
+      <a class="navbar-brand" ng-click="appController.displayHome()">
+        TNRIS Historical Aerial Imagery Admin
+      </a>
     </div>`;
   app.header(customHeaderTemplate);
 
@@ -77,8 +77,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
   record.listView()
     .title('Historical Aerial Imagery Records')
     .fields(
-      [nga.field('id').label('ID').detailLinkRoute('show')]
-      .concat(listShowFields)
+      listShowFields
     )
     .filters([
       nga.field('CountyFIPS', 'choice')
