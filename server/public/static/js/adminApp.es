@@ -58,6 +58,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       .label('Acquiring Agency'),
     nga.field('Date', 'date'),
     nga.field('Scale', 'number'),
+    nga.field('NumFrames', 'number')
+          .label('# of Frames'),
     nga.field('IndexType', 'choice')
       .label('Index Type')
       .choices(INDEX_TYPES),
@@ -99,8 +101,6 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       [nga.field('id').label('ID').isDetailLink(false)]
       .concat(listShowFields)
       .concat([
-        nga.field('NumFrames', 'number')
-          .label('# of Frames'),
         nga.field('Created', 'datetime')
           .format('yyyy-MM-dd hh:mm:ss a'),
         nga.field('Modified', 'datetime')
