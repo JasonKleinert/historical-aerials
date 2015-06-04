@@ -75,6 +75,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
 
   record.listView()
     .title('Historical Aerial Imagery Records')
+    .perPage(100)
     .fields(
       listShowFields
     )
