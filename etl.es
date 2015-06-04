@@ -134,12 +134,12 @@ function removeUnwantedRecords(rows, callback) {
 
 
 function parseDate(str, dbNo) {
-  const d = moment(str, 'MM/DD/YY').toDate();
-  if (isNaN(d)) {
+  const m = moment(str, 'MM/DD/YY');
+  if (!m.isValid()) {
     clog.debug(`Invalid date "${str}" (DB_No ${dbNo})`);
     return null;
   }
-  return d;
+  return m.toDate();
 }
 
 
