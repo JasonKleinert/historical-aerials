@@ -1,6 +1,7 @@
 rethinkdb_data/
 bower_components/
 data/*.accdb
+.migrate
 
 config/production.json
 
