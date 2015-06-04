@@ -10,7 +10,13 @@ const csv = require('dsv').csv;
 const clog = require('clog');
 const rethink = require('rethinkdb');
 const tryparse = require('tryparse');
+const moment = require('moment');
 const R = require('ramda');
+
+moment.parseTwoDigitYear = function (input) {
+  return tryparse.int(input) + 1900;
+};
+
 
 const config = require('./config');
 
@@ -128,6 +134,7 @@ function removeUnwantedRecords(rows, callback) {
 
 
 function parseDate(str, dbNo) {
+  console.log('DATE: ' + str + ' | ' + moment(str, 'MM/DD/19YY').toString());
   const d = new Date(str);
   if (isNaN(d)) {
     clog.debug(`Invalid date "${str}" (DB_No ${dbNo})`);
