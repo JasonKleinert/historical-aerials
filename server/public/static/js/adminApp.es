@@ -69,9 +69,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       .choices(MEDIUMS),
     nga.field('PrintType', 'choice')
       .label('Print Type')
-      .choices(PRINT_TYPES),
-    nga.field('IsPublic', 'boolean')
-      .label('Public')
+      .choices(PRINT_TYPES)
   ];
 
   record.listView()
@@ -88,9 +86,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
         .attributes({
           placeholder: 'Minimum Year',
           pattern: '(19|20)[0-9]{2,2}'
-        }),
-      nga.field('IsPublic', 'boolean')
-        .label('Public Only')
+        })
     ])
     .batchActions([])
     .listActions(['show', 'edit']);
