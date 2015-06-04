@@ -18,14 +18,14 @@ gulp.task('dev', ['dist', 'watch']);
 
 gulp.task('watch', function () {
   gulp.watch(dirs.server + '/**/*', ['dist-server']);
-  gulp.watch(dirs.config + '/**/*', ['dist-config']);
+  gulp.watch(dirs.config + '/**/*', ['dist-copy-config']);
 
   console.log('Watches are active for continuously disting dev files.');
   console.log('  To start dev server: `npm run start` in a separate shell');
   console.log('  In debug mode: `npm run debug` and `node-inspector` in two separate shells');
 });
 
-gulp.task('dist', ['dist-server', 'dist-config', 'dist-etl', 'dist-packaging']);
+gulp.task('dist', ['dist-server', 'dist-copy-config', 'dist-etl', 'dist-packaging']);
 
 gulp.task('dist-packaging', function () {
   return gulp.src('package.json')
@@ -44,13 +44,6 @@ gulp.task('dist-server', ['dist-copy-server'], function () {
     .pipe(gulp.dest(dirs.dist + '/' + dirs.server));
 });
 
-gulp.task('dist-config', ['dist-copy-config'], function () {
-  return gulp.src(dirs.config + '/**/*.es')
-    .pipe(babel())
-    .on('error', onErr)
-    .pipe(gulp.dest(dirs.dist + '/' + dirs.config));
-});
-
 gulp.task('dist-copy-server', function () {
   return gulp.src([
       dirs.server + '/**/*',
@@ -61,14 +54,13 @@ gulp.task('dist-copy-server', function () {
 
 gulp.task('dist-copy-config', function () {
   return gulp.src([
-      dirs.config + '/**/*',
-      '!' + dirs.config + '/**/*.es'
+      dirs.config + '/**/*'
     ])
     .pipe(gulp.dest(dirs.dist + '/' + dirs.config));
 });
 
 
-gulp.task('dist-etl', ['dist-config', 'dist-copy-data'], function () {
+gulp.task('dist-etl', ['dist-copy-config', 'dist-copy-data'], function () {
   return gulp.src('etl.es')
     .pipe(babel())
     .on('error', onErr)
