@@ -125,7 +125,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
     nga.field('Date', 'date')
       .validation({required: true}),
     nga.field('IsPublic', 'boolean')
-      .label('Public'),
+      .label('Public')
+      .defaultValue(true),
     nga.field('IndexType', 'choice')
       .label('Index Type')
       .choices(INDEX_TYPES),
