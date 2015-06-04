@@ -56,6 +56,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       .map((val) => COUNTIES[val] || 'UNKOWN'),
     nga.field('AcquiringAgency')
       .label('Acquiring Agency'),
+    nga.field('Mission'),
     nga.field('Date', 'date'),
     nga.field('Scale', 'number'),
     nga.field('NumFrames', 'number')
@@ -104,7 +105,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
         nga.field('Coverage', 'boolean'),
         nga.field('FrameSize', 'number')
           .label('Frame Size (inches)'),
-        nga.field('Mission')
+        nga.field('IsPublic', 'boolean')
+          .label('Public')
       ])
     )
     .actions(['edit']);
