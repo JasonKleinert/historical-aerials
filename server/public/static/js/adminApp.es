@@ -56,6 +56,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       .map((val) => COUNTIES[val] || 'UNKOWN'),
     nga.field('AcquiringAgency')
       .label('Acquiring Agency'),
+    nga.field('Mission'),
     nga.field('Date', 'date'),
     nga.field('Scale', 'number'),
     nga.field('NumFrames', 'number')
@@ -69,13 +70,12 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
       .choices(MEDIUMS),
     nga.field('PrintType', 'choice')
       .label('Print Type')
-      .choices(PRINT_TYPES),
-    nga.field('IsPublic', 'boolean')
-      .label('Public')
+      .choices(PRINT_TYPES)
   ];
 
   record.listView()
     .title('Historical Aerial Imagery Records')
+    .perPage(100)
     .fields(
       listShowFields
     )
@@ -88,9 +88,7 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
         .attributes({
           placeholder: 'Minimum Year',
           pattern: '(19|20)[0-9]{2,2}'
-        }),
-      nga.field('IsPublic', 'boolean')
-        .label('Public Only')
+        })
     ])
     .batchActions([])
     .listActions(['show', 'edit']);
@@ -108,7 +106,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
         nga.field('Coverage', 'boolean'),
         nga.field('FrameSize', 'number')
           .label('Frame Size (inches)'),
-        nga.field('Mission')
+        nga.field('IsPublic', 'boolean')
+          .label('Public')
       ])
     )
     .actions(['edit']);
@@ -125,7 +124,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
     nga.field('Date', 'date')
       .validation({required: true}),
     nga.field('IsPublic', 'boolean')
-      .label('Public'),
+      .label('Public')
+      .defaultValue(true),
     nga.field('IndexType', 'choice')
       .label('Index Type')
       .choices(INDEX_TYPES),
