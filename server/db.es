@@ -49,6 +49,13 @@ function filterRecords(selection, filterOpts) {
     );
     delete opts.Year;
   }
+  //special handling for case insensitive Mission codes
+  if (opts.Mission) {
+    selection = selection.filter(
+      rethink.row('Mission').match(`(?i)^${opts.Mission}$`)
+    );
+    delete opts.Mission;
+  }
   selection = selection.filter(opts);
   return selection;
 }

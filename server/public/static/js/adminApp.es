@@ -88,7 +88,8 @@ adminApp.config((NgAdminConfigurationProvider, COUNTIES, MEDIUMS, PRINT_TYPES, I
         .attributes({
           placeholder: 'Minimum Year',
           pattern: '(19|20)[0-9]{2,2}'
-        })
+        }),
+      nga.field('Mission')
     ])
     .batchActions([])
     .listActions(['show', 'edit']);

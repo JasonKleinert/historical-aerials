@@ -22,7 +22,8 @@ module.exports = (server, pathPrefix) => {
             .keys({
               CountyFIPS: Joi.number(),
               IsPublic: Joi.boolean(),
-              Year: Joi.number().integer().min(1900)
+              Year: Joi.number().integer().min(1900),
+              Mission: Joi.string()
             })
         }, lib.pagingValidation)
       }
