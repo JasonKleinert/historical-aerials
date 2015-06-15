@@ -204,8 +204,8 @@ class HistoricalImageryDb {
       const createParams = {
         emailAddress: params.emailAddress,
         password: hashPassword(params.password),
-        Created: Date.now(),
-        Modified: Date.now()
+        Created: new Date(),
+        Modified: new Date()
       };
 
       usersTable.insert(createParams).run(conn, (err, res) => {
@@ -224,7 +224,7 @@ class HistoricalImageryDb {
   updateUser(id, params, callback) {
     this.connectDb((err, conn) => {
       let updateParams = {
-        Modified: Date.now()
+        Modified: new Date()
       };
 
       if (params.password) {
@@ -308,8 +308,8 @@ class HistoricalImageryDb {
     this.connectDb((err, conn) => {
       
       const createParams = defaults({
-        Created: Date.now(),
-        Modified: Date.now()
+        Created: new Date(),
+        Modified: new Date()
       }, params);
 
       recordsTable.insert(createParams).run(conn, (err, res) => {
@@ -331,8 +331,10 @@ class HistoricalImageryDb {
   updateRecord(id, params, callback) {
     this.connectDb((err, conn) => {
       //new params with modified date
-      const updateParams = defaults({Modified: Date.now()}, 
-         R.omit(['id', 'Created', 'OrigDBNumber'], params));
+      const updateParams = defaults(
+        {Modified: new Date()}, 
+        R.omit(['id', 'Created', 'OrigDBNumber'], params)
+      );
 
       recordsTable.get(id).update(updateParams).run(conn, (err, res) => {
         if (err || !res.replaced) {
