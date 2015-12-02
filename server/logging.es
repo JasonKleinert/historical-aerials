@@ -6,7 +6,7 @@ module.exports = {
       reporter: require('good-console'),
       events: {
         log: '*',
-        response: '*'
+        error: '*'
       }
     }]
   }
