@@ -6,6 +6,7 @@ data/*.accdb
 config/production.json
 
 .dist
+*.tar.gz
 
 # Logs
 logs
