@@ -1,6 +1,18 @@
-Install rethink: http://www.rethinkdb.com/docs/install/ubuntu/
+## Setup
 
-Install packages `npm install`
+Install/Switch Node (latest version): `nvm use 6`
+
+Install rethink: http://www.rethinkdb.com/docs/install/ubuntu/
+	 - rethinkdb
+	 - Javascript drivers
+	 - Python drivers
+
+Install bower: `npm install -g bower`
+
+Install nodemon: `npm install -g nodemon`
+
+Install packages: `npm install`
+
 
 ## Development
 
@@ -14,9 +26,15 @@ our password repository.
 
 You can copy an existing dump of the database from our backup bucket on S3. Run `rethinkdb restore backupfile.tar.gz` to restore the dump to your local rethinkdb server.
 
-`gulp dev` in one terminal to watch and dist source files
+**After you have restored the backup, to start the app you must run the following 3 commands in separate terminals:**
 
-`npm start` in another terminal to run the app
+`rethinkdb` to run the database. call command from 'Home' folder (where rethinkdb is installed)
+
+`gulp dev` in one terminal to watch and dist source files. call command from historical-aerials directory
+
+`sudo npm start` in another terminal to run the app. call command from historical-aerials directory
+
+Access the application via `http://localhost:3131/admin` in the browser. Credentials in keypass.
 
 ### ETL
 
