@@ -3,6 +3,7 @@
 Install/Switch Node (latest version): `nvm use 6`
 
 Install rethink: http://www.rethinkdb.com/docs/install/ubuntu/
+Include:
 	 - rethinkdb
 	 - Javascript drivers
 	 - Python drivers
