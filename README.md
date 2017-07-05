@@ -22,7 +22,7 @@ Install packages:
 
 ### Web API and Admin Interface
 
-Copy `server/config/production.sample.json` to `server/config/production.json` and fill in config values.
+Copy `config/production.sample.json` to `config/production.json` and fill in config values.
 
 **Important:** If you are going to make production deploys, ensure that `config/production.json`
 is properly filled out, paying special attention to either use or resave the `adminPassword` in
