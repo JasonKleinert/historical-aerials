@@ -44,7 +44,7 @@ module.exports = (server, pathPrefix) => {
           db.getCounties(options, (err, results) => {
             reply(R.map(pickCountyFields)(results))
               .header('X-Total-Count', count);
-          }); 
+          });
         });
       }
     }
@@ -76,4 +76,14 @@ module.exports = (server, pathPrefix) => {
     }
   });
 
+  server.route({
+    method: 'GET',
+    path: `${pathPrefix}/`,
+    config: {
+      auth: false
+    },
+    handler: (request, reply) => {
+        reply("hi");
+    }
+  });
 };

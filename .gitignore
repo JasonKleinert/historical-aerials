@@ -4,6 +4,7 @@ data/*.accdb
 .migrate
 
 config/production.json
+config/development.json
 
 .dist
 *.tar.gz
