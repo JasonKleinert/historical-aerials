@@ -1,6 +1,6 @@
 {
   "port": 3131,
-  "db_host": "localhost",
+  "db_host": "historical-db",
   "db_port": 28015,
   "db_name": "HistoricalAerialImagery",
   "basePath": "/"

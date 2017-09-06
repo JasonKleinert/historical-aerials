@@ -16,7 +16,7 @@ function hashPassword(password) {
 }
 
 function paginate(selection, options) {
-  if (!options) { 
+  if (!options) {
     return selection;
   }
 
@@ -306,7 +306,7 @@ class HistoricalImageryDb {
   */
   createRecord(params, callback) {
     this.connectDb((err, conn) => {
-      
+
       const createParams = defaults({
         Created: new Date(),
         Modified: new Date()
@@ -332,7 +332,7 @@ class HistoricalImageryDb {
     this.connectDb((err, conn) => {
       //new params with modified date
       const updateParams = defaults(
-        {Modified: new Date()}, 
+        {Modified: new Date()},
         R.omit(['id', 'Created', 'OrigDBNumber'], params)
       );
 
